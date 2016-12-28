@@ -41,7 +41,6 @@ function populateParcelHashOptions(){
     if(getPT().region_hash_list(i) != "0x"){
       $('#parcel_hash').append($('<option>', {
         value: getPT().region_hash_list(i),
-        // text: getPT().region_hash_list(i)
         text: getPT().region_record(getPT().region_hash_list(i))[5]
       }));
     }
@@ -62,7 +61,11 @@ function updateValues() {
       } else if(officer_type_number == 3){
         ot = "Judicial";
       } else if(officer_type_number == 0){
-        ot = "Not an officer";
+        if(getPT().region_record($("#parcel_hash").val())[6] == me){
+          ot = "Parcel Owner";
+        } else {
+          ot = "Not an officer";
+        }
       }
       $("#officer_type").text(
         " " + ot
