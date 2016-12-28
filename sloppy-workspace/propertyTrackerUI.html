@@ -67,12 +67,18 @@ function updateValues() {
       $("#officer_type").text(
         " " + ot
       )
-      // tokenBalance = getToken().balanceOf(me).toNumber();
-      // $("#tokenBalance").text(tokenBalance);
 }
 
 function send(){
-  getToken().transfer.sendTransaction($("#target").val(), $("#amount").val(),{from: $("#me").val()});
+  getPT().TransferRegion.sendTransaction(
+    $("#parcel_hash").val(),
+    $("#new_owner_addr").val(),
+    $("#new_owner_name").val(),
+    {
+      from:$("#me").val(),
+      gas:1000000
+    }
+  )
   $("#status").text("waiting for block...");
   count = 1;
   web3.eth.filter('latest').watch(function() {
