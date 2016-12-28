@@ -28,8 +28,20 @@ function getPT(){
       return token;
 }
 
+
+
 function getUserAddresses(){
-  address_list = web3.eth.accounts;
+  return web3.eth.accounts;
+}
+
+function populateUserAddressOptions(){
+  console.log(getUserAddresses());
+  getUserAddresses().forEach(function(addr){
+    $('#me').append($('<option>', {
+      value: addr,
+      text: addr
+    }));
+  })
 }
 
 function updateValues() {
@@ -59,6 +71,9 @@ $("#send").click(function(){
   send();
 });
 
+//lets set it all up:
+populateUserAddressOptions();
+
 });
 
 </script>
@@ -73,8 +88,10 @@ name = "Token Address" id ="tokenAddress" /><label>Token Address
 </label>
 <br/>
 
-<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
-name = "My Account" id ="me" /><label>My Address
+<select name = "My Account" id ="me" />
+  <option selected value=0x0>None found, Do you have a GETH node running?</option>
+</select>
+<label>My Address
 </label>
 
 <hr/>
