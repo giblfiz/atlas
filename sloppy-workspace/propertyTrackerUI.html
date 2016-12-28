@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Property Tracker</title>
+<script type="text/javascript" src="web3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script type="text/javascript">
+$( document ).ready(function(){
+
+    var PTabi = [{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"},{"name":"_new_owner","type":"address"},{"name":"_action_id","type":"uint8"}],"name":"SignPending","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"},{"name":"_new_owner","type":"address"},{"name":"_action_id","type":"uint8"}],"name":"pendingExecuted","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"},{"name":"_new_owner","type":"address"},{"name":"_new_owner_name","type":"string"}],"name":"TransferRegion","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_new_officer","type":"address"},{"name":"_officer_type","type":"uint8"}],"name":"CreateOfficer","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lat","type":"uint8"},{"name":"_lng","type":"uint8"}],"name":"GetRegionContainingLatLng","outputs":[{"name":"region","type":"bytes32"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_ul_lat","type":"uint8"},{"name":"_ul_lng","type":"uint8"},{"name":"_lr_lat","type":"uint8"},{"name":"_lr_lng","type":"uint8"},{"name":"_new_owner","type":"address"},{"name":"_street_address","type":"string"}],"name":"CreateRegion","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"GetRegionByOwner","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"region_hash_list","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"}],"name":"DisolveRegion","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_new_officer","type":"address"}],"name":"RemoveOfficer","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"pending_actions","outputs":[{"name":"region_hash","type":"bytes32"},{"name":"action_id","type":"uint8"},{"name":"owner_signature","type":"address"},{"name":"local_signature","type":"address"},{"name":"federal_signature","type":"address"},{"name":"judicial_signature","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"region_record","outputs":[{"name":"ul_lat","type":"uint8"},{"name":"ul_lng","type":"uint8"},{"name":"lr_lat","type":"uint8"},{"name":"lr_lng","type":"uint8"},{"name":"owner_name","type":"string"},{"name":"street_address","type":"string"},{"name":"owner","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"officer","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"},{"name":"_new_owner","type":"address"},{"name":"_action_id","type":"uint8"}],"name":"isPendingOwnerSigned","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_region_hash","type":"bytes32"},{"name":"_new_owner","type":"address"},{"name":"_action_id","type":"uint8"}],"name":"isPendingFormalSigned","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"inputs":[{"name":"_judicial","type":"address"},{"name":"_local","type":"address"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"code","type":"uint8"}],"name":"debug","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"pa_hash","type":"bytes32"}],"name":"pendingAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_region_hash","type":"bytes32"},{"indexed":false,"name":"_new_owner","type":"address"},{"indexed":true,"name":"_action_id","type":"uint8"},{"indexed":false,"name":"owner","type":"address"},{"indexed":false,"name":"judicial","type":"address"},{"indexed":false,"name":"federal","type":"address"},{"indexed":true,"name":"local","type":"address"}],"name":"ActionExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"region_hash","type":"bytes32"},{"indexed":false,"name":"judicial","type":"address"},{"indexed":false,"name":"federal","type":"address"},{"indexed":false,"name":"local","type":"address"},{"indexed":false,"name":"owner","type":"address"}],"name":"CreateRegionExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_region_hash","type":"bytes32"},{"indexed":false,"name":"_ul_lat","type":"uint8"},{"indexed":false,"name":"_ul_lng","type":"uint8"},{"indexed":false,"name":"_lr_lat","type":"uint8"},{"indexed":false,"name":"_lr_lng","type":"uint8"},{"indexed":false,"name":"street_address","type":"string"}],"name":"DissolvedRegion","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_region_hash","type":"bytes32"},{"indexed":true,"name":"_owner_name","type":"string"}],"name":"TransferedRegion","type":"event"}];
+    var Web3 = require('web3');
+
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use Mist/MetaMask's provider
+    web3 = new Web3(web3.currentProvider);
+  } else {
+    var web3 = new Web3();
+    console.log('No web3? You should consider trying MetaMask!')
+    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  }
+
+
+function getPT(){
+      tokenAddress = $("#tokenAddress").val();
+      token = web3.eth.contract(PTabi).at(tokenAddress);
+      return token;
+}
+
+function getUserAddresses(){
+  address_list = web3.eth.accounts;
+}
+
+function updateValues() {
+      me = $("#me").val();
+      balance = web3.eth.getBalance(me).toNumber();
+      $("#balance").text(balance);
+
+      tokenBalance = getToken().balanceOf(me).toNumber();
+      $("#tokenBalance").text(tokenBalance);
+}
+
+function send(){
+  getToken().transfer.sendTransaction($("#target").val(), $("#amount").val(),{from: $("#me").val()});
+  $("#status").text("waiting for block...");
+  count = 1;
+  web3.eth.filter('latest').watch(function() {
+    updateValues()
+    $("#status").text("Blocks mined " + count++);
+  })
+}
+
+$("#update").click(function(){
+  updateValues();
+});
+
+$("#send").click(function(){
+  send();
+});
+
+});
+
+</script>
+
+</head>
+
+<body>
+<h1>Token Interface:</h1>
+
+<input type=string size= 46 value="0x4c41fe20e50f12cc9ff686dc0c57f607f1a4532b"
+name = "Token Address" id ="tokenAddress" /><label>Token Address
+</label>
+<br/>
+
+<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
+name = "My Account" id ="me" /><label>My Address
+</label>
+
+<hr/>
+
+<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
+name = "target address" id ="target" /><label>Target Address
+</label>
+
+<br/>
+<input type=string size = 6 value="1"
+name = "amount " id ="amount" />
+
+<input type = button value = "Send" id="send" />
+<input disabled type = button value = "Authorize" id="send" />
+
+<hr/>
+<div>Status:<span id="status">...</span></div>
+<div>Balance[Wei]:<span id="balance">...</span></div>
+<div>Balance[Tokens]:<span id="tokenBalance">...</span></div>
+
+<br/>
+<input type = button value = "UPDATE!" id="update""/>
+
+<hr>
+<address></address>
+<!-- hhmts start -->Last modified: Tue Oct 18 11:26:47 PDT 2016 <!-- hhmts end -->
+</body> </html>
