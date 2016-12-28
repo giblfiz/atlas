@@ -21,22 +21,14 @@ $( document ).ready(function(){
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
 
-
 function getPT(){
       tokenAddress = $("#tokenAddress").val();
       token = web3.eth.contract(PTabi).at(tokenAddress);
       return token;
 }
 
-
-
-function getUserAddresses(){
-  return web3.eth.accounts;
-}
-
 function populateUserAddressOptions(){
-  console.log(getUserAddresses());
-  getUserAddresses().forEach(function(addr){
+  web3.eth.accounts.forEach(function(addr){
     $('#me').append($('<option>', {
       value: addr,
       text: addr
@@ -44,13 +36,39 @@ function populateUserAddressOptions(){
   })
 }
 
+function populateParcelHashOptions(){
+  for(i=0;i<10;i++){
+    if(getPT().region_hash_list(i) != "0x"){
+      $('#parcel_hash').append($('<option>', {
+        value: getPT().region_hash_list(i),
+        // text: getPT().region_hash_list(i)
+        text: getPT().region_record(getPT().region_hash_list(i))[5]
+      }));
+    }
+  }
+}
+
+
 function updateValues() {
       me = $("#me").val();
       balance = web3.eth.getBalance(me).toNumber();
       $("#balance").text(balance);
 
-      tokenBalance = getToken().balanceOf(me).toNumber();
-      $("#tokenBalance").text(tokenBalance);
+      officer_type_number = getPT().officer(me);
+      if(officer_type_number == 1){
+        ot = "Notary (local)";
+      } else if(officer_type_number == 2){
+        ot = "Federal";
+      } else if(officer_type_number == 3){
+        ot = "Judicial";
+      } else if(officer_type_number == 0){
+        ot = "Not an officer";
+      }
+      $("#officer_type").text(
+        " " + ot
+      )
+      // tokenBalance = getToken().balanceOf(me).toNumber();
+      // $("#tokenBalance").text(tokenBalance);
 }
 
 function send(){
@@ -63,7 +81,7 @@ function send(){
   })
 }
 
-$("#update").click(function(){
+$("#me").change(function(){
   updateValues();
 });
 
@@ -73,7 +91,7 @@ $("#send").click(function(){
 
 //lets set it all up:
 populateUserAddressOptions();
-
+populateParcelHashOptions();
 });
 
 </script>
@@ -84,7 +102,7 @@ populateUserAddressOptions();
 <h1>Token Interface:</h1>
 
 <input type=string size= 46 value="0x4c41fe20e50f12cc9ff686dc0c57f607f1a4532b"
-name = "Token Address" id ="tokenAddress" /><label>Token Address
+name = "Token Address" id ="tokenAddress" /><label>Contract Address (You probably don't want to change this)
 </label>
 <br/>
 
@@ -96,13 +114,27 @@ name = "Token Address" id ="tokenAddress" /><label>Token Address
 
 <hr/>
 
-<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
-name = "target address" id ="target" /><label>Target Address
-</label>
-
+<select name = "Real Estate Parcel Hash" id ="parcel_hash" />
+  <option selected value=0x0>--</option>
+</select>
+<label>Parcel Hash (dropdown UI only makes sense when there are few parcels)</label>
 <br/>
-<input type=string size = 6 value="1"
-name = "amount " id ="amount" />
+
+<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
+name = "target address" id ="new_owner_addr" />
+<label>
+  New Owner Address (later should be a QR reader)
+</label>
+<br/>
+
+
+<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
+name = "target name" id ="new_owner_name" />
+<label>
+  New Owner Name
+</label>
+<br/>
+
 
 <input type = button value = "Send" id="send" />
 <input disabled type = button value = "Authorize" id="send" />
@@ -110,7 +142,7 @@ name = "amount " id ="amount" />
 <hr/>
 <div>Status:<span id="status">...</span></div>
 <div>Balance[Wei]:<span id="balance">...</span></div>
-<div>Balance[Tokens]:<span id="tokenBalance">...</span></div>
+<div>Officer type?<span id="officer_type">...</span></div>
 
 <br/>
 <input type = button value = "UPDATE!" id="update""/>
