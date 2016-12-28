@@ -21,6 +21,31 @@ $( document ).ready(function(){
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
 
+
+//this is lifted from some dudes comment
+//
+  function solSha3 (...args) {
+      args = args.map(arg => {
+          if (typeof arg === 'string') {
+              if (arg.substring(0, 2) === '0x') {
+                  return arg.slice(2)
+              } else {
+                  return web3.toHex(arg).slice(2)
+              }
+          }
+
+          if (typeof arg === 'number') {
+              return leftPad((arg).toString(16), 64, 0)
+          } else {
+            return ''
+          }
+      })
+
+      args = args.join('')
+
+      return '0x' + web3.sha3(args, { encoding: 'hex' })
+  }
+
 function getPT(){
       tokenAddress = $("#tokenAddress").val();
       token = web3.eth.contract(PTabi).at(tokenAddress);
@@ -85,6 +110,12 @@ function send(){
   $("#status").text("waiting for block...");
   count = 1;
   web3.eth.filter('latest').watch(function() {
+    // console.log(
+    //   getPT().pending_actions(solSha3($("#parcel_hash").val(),
+    //       $("#new_owner_addr").val(),
+    //       19))
+    // );
+
     updateValues()
     $("#status").text("Blocks mined " + count++);
   })
@@ -144,9 +175,11 @@ name = "target name" id ="new_owner_name" />
 </label>
 <br/>
 
-
 <input type = button value = "Send" id="send" />
-<input disabled type = button value = "Authorize" id="send" />
+
+
+<hr/>
+
 
 <hr/>
 <div>Status:<span id="status">...</span></div>
