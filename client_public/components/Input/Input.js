@@ -5,20 +5,7 @@ class Input extends React.Component {
   static propTypes = {
     label: PropTypes.string,
     value: PropTypes.string,
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: props.value,
-    };
-
-    this.handleValueChange = this.handleValueChange.bind(this);
-  }
-
-  handleValueChange(event) {
-    this.setState({ value: event.target.value });
+    handleValueChange: PropTypes.func.isRequired,
   }
 
   render() {
@@ -26,8 +13,8 @@ class Input extends React.Component {
       <div>
         <label>{this.props.label}: <input
           type="text"
-          value={this.state.value}
-          onChange={this.handleValueChange}
+          value={this.props.value}
+          onChange={this.props.handleValueChange}
         /></label>
       </div>
     );
