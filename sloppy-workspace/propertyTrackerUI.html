@@ -126,7 +126,7 @@ function createParcel(ul_lat, ul_lng, lr_lat, lr_lng, street_address){
     ul_lat, ul_lng,
     lr_lat, lr_lng,
     $("#new_owner_addr").val(),
-    99999,
+    street_address,
     {
       from:$("#me").val(),
       gas:1000000
@@ -146,10 +146,10 @@ $("#send").click(function(){
 });
 
 $("#create").click(function(){
-  createParcel($("#ul_lat").val(),
-          $("#ul_lng").val(),
-          $("#lr_lat").val(),
-          $("#lr_lng").val(),
+  createParcel(parseInt($("#ul_lat").val()),
+          parseInt($("#ul_lng").val()),
+          parseInt($("#lr_lat").val()),
+          parseInt($("#lr_lng").val()),
           $("#street_address").val()
           );
 });
