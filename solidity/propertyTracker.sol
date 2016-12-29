@@ -48,7 +48,7 @@ function Atlas(address _judicial, address _notary){
     officer[_notary] = NOTARY;
 }
 
-function getPendingActionHash(_parcel_hash,_new_owner,_action_id) returns(bytes32 hash){
+function getPendingActionHash(bytes32 _parcel_hash, address _new_owner, uint8 _action_id) returns (bytes32){
   return sha3(_parcel_hash,_new_owner,_action_id);
 }
 
@@ -59,7 +59,7 @@ function signPending(bytes32 _parcel_hash, address _new_owner, uint8 _action_id)
         pending_action_map[pending_action_hash].parcel_hash = _parcel_hash;
     }
     if(officer[msg.sender] == 0 ){
-        if(parcel_atlas[_parcel_hash].owner == msg.sender){
+        if(parcel_map[_parcel_hash].owner == msg.sender){
             pending_action_map[pending_action_hash].owner_signature = msg.sender;
         }
     } else {
@@ -105,7 +105,7 @@ event actionExecuted(bytes32 indexed _parcel_hash, address _new_owner, uint8 ind
 
 function pendingExecuted(bytes32 _parcel_hash, address _new_owner, uint8 _action_id){
     bytes32 pending_action_hash = getPendingActionHash(_parcel_hash,_new_owner,_action_id);
-    ActionExecuted(_parcel_hash, _new_owner, _action_id,
+    actionExecuted(_parcel_hash, _new_owner, _action_id,
     pending_action_map[pending_action_hash].owner_signature,
     pending_action_map[pending_action_hash].judicial_signature,
     pending_action_map[pending_action_hash].federal_signature,
@@ -120,15 +120,15 @@ function createParcel(uint8 _ul_lat, uint8 _ul_lng, uint8 _lr_lat, uint8 _lr_lng
 , address _new_owner, string _street_address){
     //MAYBE check for collisions first?
     bytes32 parcel_hash = sha3(_ul_lat,_ul_lng,_lr_lat,_lr_lng);
-    SignPending(parcel_hash, _new_owner, CREATE_PARCEL);
+    signPending(parcel_hash, _new_owner, CREATE_PARCEL);
     if(isPendingFormalSigned(parcel_hash,_new_owner,CREATE_PARCEL)){
         parcel_hash_list.push(parcel_hash);
-        parcel_atlas[parcel_hash].ul_lat = _ul_lat;
-        parcel_atlas[parcel_hash].ul_lng = _ul_lng;
-        parcel_atlas[parcel_hash].lr_lat = _lr_lat;
-        parcel_atlas[parcel_hash].lr_lng = _lr_lng;
-        parcel_atlas[parcel_hash].owner = _new_owner;
-        parcel_atlas[parcel_hash].street_address = _street_address;
+        parcel_map[parcel_hash].ul_lat = _ul_lat;
+        parcel_map[parcel_hash].ul_lng = _ul_lng;
+        parcel_map[parcel_hash].lr_lat = _lr_lat;
+        parcel_map[parcel_hash].lr_lng = _lr_lng;
+        parcel_map[parcel_hash].owner = _new_owner;
+        parcel_map[parcel_hash].street_address = _street_address;
         pendingExecuted(parcel_hash,_new_owner,CREATE_PARCEL);
     }
 }
@@ -137,18 +137,18 @@ event dissolvedParcel(bytes32 indexed _parcel_hash, uint8 _ul_lat, uint8 _ul_lng
                       uint8 _lr_lat, uint8 _lr_lng, string street_address);
 
 function dissolveParcel(bytes32 _parcel_hash){
-    SignPending(_parcel_hash, 0x0, DISSOLVE_PARCEL);
+    signPending(_parcel_hash, 0x0, DISSOLVE_PARCEL);
     if(isPendingFormalSigned(_parcel_hash,0x0,DISSOLVE_PARCEL)){
 
         //record the entire lat/ln of the disolved region
-        DissolvedParcel(_parcel_hash,
-        parcel_atlas[_parcel_hash].ul_lat,
-        parcel_atlas[_parcel_hash].ul_lng,
-        parcel_atlas[_parcel_hash].lr_lat,
-        parcel_atlas[_parcel_hash].lr_lng,
-        parcel_atlas[_parcel_hash].street_address);
+        dissolvedParcel(_parcel_hash,
+        parcel_map[_parcel_hash].ul_lat,
+        parcel_map[_parcel_hash].ul_lng,
+        parcel_map[_parcel_hash].lr_lat,
+        parcel_map[_parcel_hash].lr_lng,
+        parcel_map[_parcel_hash].street_address);
 
-        delete parcel_atlas[_parcel_hash];
+        delete parcel_map[_parcel_hash];
         pendingExecuted(_parcel_hash,0x0,DISSOLVE_PARCEL);
         //How can we clean up parcel_hash_list?
     }
@@ -157,12 +157,12 @@ function dissolveParcel(bytes32 _parcel_hash){
 event transferedParcel(bytes32 indexed _parcel_hash, string indexed _owner_name);
 
 function transferParcel(bytes32 _parcel_hash,address _new_owner, string _new_owner_name){
-    SignPending(_parcel_hash, _new_owner, TRANSFER_PARCEL);
+    signPending(_parcel_hash, _new_owner, TRANSFER_PARCEL);
     if(isPendingFormalSigned(_parcel_hash,_new_owner,TRANSFER_PARCEL)
     || isPendingOwnerSigned(_parcel_hash,_new_owner,TRANSFER_PARCEL)){
-        transferedParcel(_parcel_hash, parcel_atlas[_parcel_hash].owner_name);
-        parcel_atlas[_parcel_hash].owner = _new_owner;
-        parcel_atlas[_parcel_hash].owner_name = _new_owner_name;
+        transferedParcel(_parcel_hash, parcel_map[_parcel_hash].owner_name);
+        parcel_map[_parcel_hash].owner = _new_owner;
+        parcel_map[_parcel_hash].owner_name = _new_owner_name;
         pendingExecuted(_parcel_hash,_new_owner,TRANSFER_PARCEL);
     }
 }
@@ -170,7 +170,7 @@ function transferParcel(bytes32 _parcel_hash,address _new_owner, string _new_own
 function createOfficer(address _new_officer, uint8 _officer_type){
     //todo: unnessisary sha3, makes records less readable as well!
     //just did this to avoid having to refactor the bytes32 vs uint8 type
-    SignPending(sha3(_officer_type), _new_officer, CREATE_OFFICER);
+    signPending(sha3(_officer_type), _new_officer, CREATE_OFFICER);
     if(isPendingFormalSigned(sha3(_officer_type),_new_officer,CREATE_OFFICER)){
         officer[_new_officer] = _officer_type;
         pendingExecuted(sha3(_officer_type), _new_officer, CREATE_OFFICER);
@@ -180,7 +180,7 @@ function createOfficer(address _new_officer, uint8 _officer_type){
 function removeOfficer(address _new_officer){
     //todo: unnessisary sha3, makes records less readable as well!
     //just did this to avoid having to refactor the bytes32 vs uint8 type
-    SignPending("remove", _new_officer, REMOVE_OFFICER);
+    signPending("remove", _new_officer, REMOVE_OFFICER);
     if(isPendingFormalSigned("remove",_new_officer,REMOVE_OFFICER)){
         delete officer[_new_officer];
         pendingExecuted("remove", _new_officer, REMOVE_OFFICER);
@@ -191,7 +191,7 @@ function removeOfficer(address _new_officer){
 function getParcelByOwner(address _owner) returns (bytes32){
  // note computation intensive... do not us when gas is needed
     for (uint i = 0; i < parcel_hash_list.length; i++) {
-      if(parcel_atlas[parcel_hash_list[i]].owner == _owner){
+      if(parcel_map[parcel_hash_list[i]].owner == _owner){
            return parcel_hash_list[i];
       }
     }
@@ -202,10 +202,10 @@ function getParcelContainingLatLng(uint8 _lat, uint8 _lng) returns (bytes32 regi
      // note computation intensive... do not us when gas is needed
     for (uint i = 0; i < parcel_hash_list.length; i++) {
       //maybe a bug here with N/S of equator and E/W of Lat zero
-      if(parcel_atlas[parcel_hash_list[i]].ul_lat > _lat
-        && parcel_atlas[parcel_hash_list[i]].ul_lng < _lng
-        && parcel_atlas[parcel_hash_list[i]].lr_lat < _lat
-        && parcel_atlas[parcel_hash_list[i]].lr_lng > _lng
+      if(parcel_map[parcel_hash_list[i]].ul_lat > _lat
+        && parcel_map[parcel_hash_list[i]].ul_lng < _lng
+        && parcel_map[parcel_hash_list[i]].lr_lat < _lat
+        && parcel_map[parcel_hash_list[i]].lr_lng > _lng
         ){
           return(parcel_hash_list[i]);
       }
