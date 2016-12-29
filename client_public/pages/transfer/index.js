@@ -30,6 +30,9 @@ class TransferPage extends React.Component {
       lowerRightLat: 5000,
       lowerRightLng: 6000,
       newParcelName: 'Somewhere Lovely',
+      status: '',
+      balance: '',
+      officerType: '',
     };
 
     this.handleChangeContractHash = this.handleChangeContractHash.bind(this);
@@ -108,6 +111,11 @@ class TransferPage extends React.Component {
         <Input label="New Parcel Name" value={this.state.newParcelName} />
         <div><Button type="raised">Create</Button></div>
         <hr />
+        <h4>Dynamic Status Information</h4>
+        <span>Status: {this.state.status}</span><br />
+        <span>Balance (wei): {this.state.balance}</span><br />
+        <span>Officer Type: {this.state.officerType}</span>
+        <div><Button type="raised">Update</Button></div>
         <p>
           <br /><br />
         </p>
