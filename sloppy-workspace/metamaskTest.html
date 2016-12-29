@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Property Tracker</title>
+<script type="text/javascript" src="web3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script type="text/javascript">
+window.addEventListener('load', function() {
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use Mist/MetaMask's provider
+    web3 = new Web3(web3.currentProvider);
+  } else {
+    console.log('No web3? You should consider trying MetaMask!')
+    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  }
+
+  $("#update").click(function(){
+    $("#status").text("waiting for block...");
+    count = 1;
+    web3.eth.filter('latest').watch(function() {
+      $("#status").text("Blocks mined " + count++);
+      web3.eth.getBalance(web3.eth.accounts[0],function(error, bal){
+        $("#balance").text(
+         web3.fromWei(bal, "ether")
+        )
+      })
+    })
+  });
+}); //end event listener
+</script>
+
+<body>
+
+<h1>Metamask Demo!</h1>
+<p>To have metamask actually work, you need to be running it from an http server.
+  A quick and easy way to do this is to open a terminal, CD to this directory
+  and run <i> python -m SimpleHTTPServer 9393 </i> then you can visit <i>
+    loclahost:9393</i>
+  </p>
+
+<h2>Dynamic status Information</h2>
+<div>Status: <span id="status">...</span></div>
+<div>Balance[Ether]: <span id="balance">...</span></div>
+
+<br/>
+<input type = button value = "UPDATE!" id="update"/>
+
+</body> </html>
