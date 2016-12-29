@@ -94,7 +94,8 @@ function updateValues() {
       } else if(officer_type_number == 3){
         ot = "Judicial";
       } else if(officer_type_number == 0){
-        if(getAtlas().parcel_map($("#parcel_hash").val())[6] == me){
+        if($("#parcel_hash").val() !== "0x0"
+          && getAtlas().parcel_map($("#parcel_hash").val())[6] == me){
           ot = "Parcel Owner";
         } else {
           ot = "Not an officer";
