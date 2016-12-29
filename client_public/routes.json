@@ -13,6 +13,10 @@
     "chunk": "main"
   },
   {
+    "path": "/transfer",
+    "page": "./pages/transfer"
+  },
+  {
     "path": "/about",
     "page": "./pages/about"
   },
