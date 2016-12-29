@@ -46,11 +46,20 @@ $( document ).ready(function(){
       return '0x' + web3.sha3(args, { encoding: 'hex' })
   }
 
+var propertyTracker = null;
 function getPT(){
-      tokenAddress = $("#tokenAddress").val();
-      token = web3.eth.contract(PTabi).at(tokenAddress);
-      return token;
+      if(propertyTracker == null){
+        tokenAddress = $("#tokenAddress").val();
+        token = web3.eth.contract(PTabi).at(tokenAddress);
+        propertyTracker = token;
+      }
+      return propertyTracker;
 }
+
+//if they change the token address, reset propertyTracker so it needs to be fetched again
+$("#tokenAddress").change(()=>{propertyTracker = null});
+
+
 
 function populateUserAddressOptions(){
   web3.eth.accounts.forEach(function(addr){
