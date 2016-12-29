@@ -136,10 +136,10 @@ function createParcel(ul_lat, ul_lng, lr_lat, lr_lng, street_address){
 }
 
 $("#me").change(function(){
-  populateUserAddressOptions();
-  populateParcelHashOptions();
   updateValues();
 });
+
+$("#tokenAddress").change(populateParcelHashOptions);
 
 $("#send").click(function(){
   send();
