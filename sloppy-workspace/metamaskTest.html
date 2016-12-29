@@ -3,9 +3,11 @@
 <title>Property Tracker</title>
 <script type="text/javascript" src="web3.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
 
 <script type="text/javascript">
 var update_manager;
+
 window.addEventListener('load', function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
@@ -35,16 +37,26 @@ function getCurrentContractAddress(){
   var ROPSTEN = 3; //ropsten testnetwork version
   var LIVE = 1; // live netowork version... not sure this is actually correct
 
-  web3.version.getNetwork(function(error,result){
-    if(result == ROPSTEN){
+  var getNetwork = Promise.promisify(web3.version.getNetwork);
+
+  getNetwork().then((r)=>{
+    if(r == ROPSTEN){
       update_manager_addr = "0x20deed01059bd6441717a1ffb42debff2eb8d037";
     }
+    return update_manager_addr;
+  })
+  .then((r)=>{
+    console.log(r);
+    return r;
+  })
+  .then((addr)=>{
+    update_manager = web3.eth.contract(update_manager_abi).at(addr);
+    return Promise.promisify(update_manager.current_version)();
+  })
+  .then((v)=>{
+    $("#tokenAddress").text(v);;
+  })
 
-    update_manager = web3.eth.contract(update_manager_abi).at(update_manager_addr);
-    update_manager.current_version(function(e,r){
-      $("#tokenAddress").text(r);
-    });
-  });
 }
 
 getCurrentContractAddress();
