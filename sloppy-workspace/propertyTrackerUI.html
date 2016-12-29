@@ -121,12 +121,37 @@ function send(){
   })
 }
 
+function createParcel(ul_lat, ul_lng, lr_lat, lr_lng, street_address){
+  getPT().CreateRegion.sendTransaction(
+    ul_lat, ul_lng,
+    lr_lat, lr_lng,
+    $("#new_owner_addr").val(),
+    street_address,
+    {
+      from:$("#me").val(),
+      gas:1000000
+    }
+  )
+
+}
+
 $("#me").change(function(){
   updateValues();
 });
 
+$("#tokenAddress").change(populateParcelHashOptions);
+
 $("#send").click(function(){
   send();
+});
+
+$("#create").click(function(){
+  createParcel(parseInt($("#ul_lat").val()),
+          parseInt($("#ul_lng").val()),
+          parseInt($("#lr_lat").val()),
+          parseInt($("#lr_lng").val()),
+          $("#street_address").val()
+          );
 });
 
 //lets set it all up:
@@ -154,6 +179,8 @@ name = "Token Address" id ="tokenAddress" /><label>Contract Address (You probabl
 
 <hr/>
 
+<h2> Transfer a Parcel </h2>
+
 <select name = "Real Estate Parcel Hash" id ="parcel_hash" />
   <option selected value=0x0>--</option>
 </select>
@@ -179,9 +206,24 @@ name = "target name" id ="new_owner_name" />
 
 
 <hr/>
+<h2> Create a Parcel </h2>
+UPPER LEFT lat/lng:
+<input type=string  value="1000" name = "ul_lat" id ="ul_lat" />/
+<input type=string  value="2000" name = "ul_lng" id ="ul_lng" />
+<br/>
+
+LOWER RIGHT lat/lng:
+<input type=string  value="5000" name = "lr_lat" id ="ul_lat" />/
+<input type=string  value="6000" name = "lr_lng" id ="ul_lng" />
+<br/>
+
+<input type=string  value="Somewhere Lovely!" name = "street_address" id ="street_address" />
+
+<input type= button value="create parcel" id ="create" />
 
 
 <hr/>
+<h2>Dynamic status Information</h2>
 <div>Status:<span id="status">...</span></div>
 <div>Balance[Wei]:<span id="balance">...</span></div>
 <div>Officer type?<span id="officer_type">...</span></div>
