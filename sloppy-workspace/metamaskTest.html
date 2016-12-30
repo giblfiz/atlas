@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Property Tracker</title>
+<script type="text/javascript" src="web3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
+
+<script type="text/javascript">
+var update_manager;
+
+window.addEventListener('load', function() {
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use Mist/MetaMask's provider
+    web3 = new Web3(web3.currentProvider);
+  } else {
+    console.log('No web3? You should consider trying MetaMask!')
+    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  }
+
+  $("#update").click(function(){
+    $("#status").text("waiting for block...");
+    count = 1;
+    web3.eth.filter('latest').watch(function() {
+      $("#status").text("Blocks mined " + count++);
+      web3.eth.getBalance(web3.eth.accounts[0],function(error, bal){
+        $("#balance").text(
+         web3.fromWei(bal, "ether")
+        )
+      })
+    })
+  });
+
+var update_manager_abi = [{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"removeOwner","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"owner","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"addOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_cv","type":"address"}],"name":"setCurrentVersion","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"current_version","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"new_version","type":"address"},{"indexed":true,"name":"done_by_address","type":"address"}],"name":"updatedCurrentVersion","type":"event"}];
+function getCurrentContractAddress(){
+  var ROPSTEN = 3; //ropsten testnetwork version
+  var LIVE = 1; // live netowork version... not sure this is actually correct
+
+  var getNetwork = Promise.promisify(web3.version.getNetwork);
+
+  getNetwork().then((r)=>{
+    if(r == ROPSTEN){
+      update_manager_addr = "0x20deed01059bd6441717a1ffb42debff2eb8d037";
+    }
+    return update_manager_addr;
+  })
+  .then((r)=>{
+    console.log(r);
+    return r;
+  })
+  .then((addr)=>{
+    update_manager = web3.eth.contract(update_manager_abi).at(addr);
+    return Promise.promisify(update_manager.current_version)();
+  })
+  .then((v)=>{
+    $("#tokenAddress").text(v);;
+  })
+
+}
+
+getCurrentContractAddress();
+
+}); //end event listener
+</script>
+
+<body>
+
+<h1>Metamask Demo!</h1>
+<p>To have metamask actually work, you need to be running it from an http server.
+  A quick and easy way to do this is to open a terminal, CD to this directory
+  and run <i> python -m SimpleHTTPServer 9393 </i> then you can visit <i>
+    loclahost:9393</i>
+  </p>
+
+<a href="https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md">
+  The Metamask FAQ</a> that I wish I had found earlier
+
+<h2>Dynamic status Information</h2>
+<div>Status: <span id="status">...</span></div>
+<div>Balance[Ether]: <span id="balance">...</span></div>
+
+<div>Contract Address: <span id="tokenAddress">...</span></div>
+
+
+<br/>
+<input type = button value = "UPDATE!" id="update"/>
+
+</body> </html>
