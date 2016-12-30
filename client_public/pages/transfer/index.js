@@ -29,7 +29,7 @@ class TransferPage extends React.Component {
       updateManager: {},
       atlasAddress: '',
       atlas: {},
-      userHash: '0xGET_VIA_WEB3',
+      myAddresses: [],
       parcelHash: '0x?',
       newOwnerHash: '0x?',
       newOwnerName: 'Doktor Suchandsuch',
@@ -44,7 +44,7 @@ class TransferPage extends React.Component {
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
-    this.handleChangeUserHash = this.handleChangeUserHash.bind(this);
+    this.handleChangeMyAddresses = this.handleChangeMyAddresses.bind(this);
     this.handleChangeParcelHash = this.handleChangeParcelHash.bind(this);
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
     this.handleChangeNewOwnerName = this.handleChangeNewOwnerName.bind(this);
@@ -64,6 +64,9 @@ class TransferPage extends React.Component {
         this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) });
       });
     });
+    this.setState({
+      myAddresses: web3.eth.accounts,
+    });
   }
 
   componentDidMount() {
@@ -74,8 +77,8 @@ class TransferPage extends React.Component {
     this.setState({ updateManagerAddress: event.target.value });
   }
 
-  handleChangeUserHash(event) {
-    this.setState({ userHash: event.target.value });
+  handleChangeMyAddresses(event) {
+    this.setState({ myAddresses: event.target.value });
   }
 
   handleChangeParcelHash(event) {
@@ -115,7 +118,9 @@ class TransferPage extends React.Component {
       <Layout className={s.content}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.state.atlasAddress} />
-        <Input label="My Address" value={this.state.userHash} />
+        <label>My Address: <select>
+          {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
+        </select></label>
         <h4>Transfer a Parcel</h4>
         <Input label="Parcel Hash" value={this.state.parcelHash} />
         <Input label="New Owner Hash" value={this.state.newOwnerHash} />
