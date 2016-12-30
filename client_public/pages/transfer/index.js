@@ -15,12 +15,19 @@ import Button from '../../components/Button';
 import s from './styles.css';
 import { title, html } from './index.md';
 
+import Web3 from 'web3';
+const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+import ATLAS_ABI from './atlas_abi.json';
+import UPDATE_MANAGER_ABI from './update_manager_abi.json';
+
 class TransferPage extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      contractHash: '0x4c41fe20e50f12cc9ff686dc0c57f607f1a4532b',
+      updateManager: {},
+      updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
+      atlasAddress: '',
       userHash: '0xGET_VIA_WEB3',
       parcelHash: '0x?',
       newOwnerHash: '0x?',
@@ -35,7 +42,7 @@ class TransferPage extends React.Component {
       officerType: '',
     };
 
-    this.handleChangeContractHash = this.handleChangeContractHash.bind(this);
+    this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
     this.handleChangeUserHash = this.handleChangeUserHash.bind(this);
     this.handleChangeParcelHash = this.handleChangeParcelHash.bind(this);
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
@@ -47,12 +54,21 @@ class TransferPage extends React.Component {
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
   }
 
+  componentWillMount() {
+    this.setState({
+      updateManager: web3.eth.contract(UPDATE_MANAGER_ABI).at(this.state.updateManagerAddress),
+    }, () => {
+      const ATLAS_ADDRESS = this.state.updateManager.current_version();
+      this.setState({ atlasAddress: ATLAS_ADDRESS });
+    });
+  }
+
   componentDidMount() {
     document.title = title;
   }
 
-  handleChangeContractHash(event) {
-    this.setState({ contractHash: event.target.value });
+  handleChangeUpdateManagerAddress(event) {
+    this.setState({ updateManagerAddress: event.target.value });
   }
 
   handleChangeUserHash(event) {
@@ -95,7 +111,7 @@ class TransferPage extends React.Component {
     return (
       <Layout className={s.content}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <Input label="Contract Hash" value={this.state.contractHash} />
+        <Input label="Atlas Address" value={this.state.atlasAddress} />
         <Input label="My Address" value={this.state.userHash} />
         <h4>Transfer a Parcel</h4>
         <Input label="Parcel Hash" value={this.state.parcelHash} />
