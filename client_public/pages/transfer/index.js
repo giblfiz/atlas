@@ -30,7 +30,7 @@ class TransferPage extends React.Component {
       atlasAddress: '',
       atlas: {},
       myAddresses: [],
-      parcelHash: '0x?',
+      parcelHash: [],
       newOwnerHash: '0x?',
       newOwnerName: 'Doktor Suchandsuch',
       upperLeftLat: 1000,
@@ -61,9 +61,21 @@ class TransferPage extends React.Component {
     }, () => {
       const ATLAS_ADDRESS = this.state.updateManager.current_version();
       this.setState({ atlasAddress: ATLAS_ADDRESS }, () => {
-        this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) });
+        this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) }, () => {
+          const parcelHash = [];
+          for (let i = 0; i < 10; i++) {
+            if (this.state.atlas.parcel_hash_list(i) !== '0x') {
+              parcelHash.push({
+                value: this.state.atlas.parcel_hash_list(i),
+                text: this.state.atlas.parcel_map(this.state.atlas.parcel_hash_list(i))[5],
+              });
+            }
+          }
+          this.setState({ parcelHash });
+        });
       });
     });
+
     this.setState({
       myAddresses: web3.eth.accounts,
     });
@@ -122,7 +134,9 @@ class TransferPage extends React.Component {
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
         <h4>Transfer a Parcel</h4>
-        <Input label="Parcel Hash" value={this.state.parcelHash} />
+        <label>Parcel Hash: <select>
+          {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
+        </select></label>
         <Input label="New Owner Hash" value={this.state.newOwnerHash} />
         <Input label="New Owner Name" value={this.state.newOwnerName} />
         <div><Button type="raised">Transfer</Button></div>
