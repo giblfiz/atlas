@@ -1,23 +1,38 @@
 [
    {
-      "constant":false,
+      "constant":true,
       "inputs":[
          {
-            "name":"_region_hash",
+            "name":"",
+            "type":"bytes32"
+         }
+      ],
+      "name":"pending_action_map",
+      "outputs":[
+         {
+            "name":"parcel_hash",
             "type":"bytes32"
          },
          {
-            "name":"_new_owner",
+            "name":"action_id",
+            "type":"uint8"
+         },
+         {
+            "name":"owner_signature",
             "type":"address"
          },
          {
-            "name":"_action_id",
-            "type":"uint8"
+            "name":"notary_signature",
+            "type":"address"
+         },
+         {
+            "name":"federal_signature",
+            "type":"address"
+         },
+         {
+            "name":"judicial_signature",
+            "type":"address"
          }
-      ],
-      "name":"SignPending",
-      "outputs":[
-
       ],
       "payable":false,
       "type":"function"
@@ -26,7 +41,7 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -49,7 +64,7 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -57,11 +72,11 @@
             "type":"address"
          },
          {
-            "name":"_new_owner_name",
-            "type":"string"
+            "name":"_action_id",
+            "type":"uint8"
          }
       ],
-      "name":"TransferRegion",
+      "name":"signPending",
       "outputs":[
 
       ],
@@ -72,177 +87,23 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_new_officer",
-            "type":"address"
-         },
-         {
-            "name":"_officer_type",
-            "type":"uint8"
-         }
-      ],
-      "name":"CreateOfficer",
-      "outputs":[
-
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_lat",
-            "type":"uint8"
-         },
-         {
-            "name":"_lng",
-            "type":"uint8"
-         }
-      ],
-      "name":"GetRegionContainingLatLng",
-      "outputs":[
-         {
-            "name":"region",
+            "name":"_parcel_hash",
             "type":"bytes32"
-         }
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_ul_lat",
-            "type":"uint8"
-         },
-         {
-            "name":"_ul_lng",
-            "type":"uint8"
-         },
-         {
-            "name":"_lr_lat",
-            "type":"uint8"
-         },
-         {
-            "name":"_lr_lng",
-            "type":"uint8"
          },
          {
             "name":"_new_owner",
             "type":"address"
          },
          {
-            "name":"_street_address",
-            "type":"string"
-         }
-      ],
-      "name":"CreateRegion",
-      "outputs":[
-
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_owner",
-            "type":"address"
-         }
-      ],
-      "name":"GetRegionByOwner",
-      "outputs":[
-         {
-            "name":"",
-            "type":"bytes32"
-         }
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":true,
-      "inputs":[
-         {
-            "name":"",
-            "type":"uint256"
-         }
-      ],
-      "name":"region_hash_list",
-      "outputs":[
-         {
-            "name":"",
-            "type":"bytes32"
-         }
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_region_hash",
-            "type":"bytes32"
-         }
-      ],
-      "name":"DisolveRegion",
-      "outputs":[
-
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_new_officer",
-            "type":"address"
-         }
-      ],
-      "name":"RemoveOfficer",
-      "outputs":[
-
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":true,
-      "inputs":[
-         {
-            "name":"",
-            "type":"bytes32"
-         }
-      ],
-      "name":"pending_actions",
-      "outputs":[
-         {
-            "name":"region_hash",
-            "type":"bytes32"
-         },
-         {
-            "name":"action_id",
+            "name":"_action_id",
             "type":"uint8"
-         },
+         }
+      ],
+      "name":"getPendingActionHash",
+      "outputs":[
          {
-            "name":"owner_signature",
-            "type":"address"
-         },
-         {
-            "name":"local_signature",
-            "type":"address"
-         },
-         {
-            "name":"federal_signature",
-            "type":"address"
-         },
-         {
-            "name":"judicial_signature",
-            "type":"address"
+            "name":"",
+            "type":"bytes32"
          }
       ],
       "payable":false,
@@ -256,7 +117,7 @@
             "type":"bytes32"
          }
       ],
-      "name":"region_record",
+      "name":"parcel_map",
       "outputs":[
          {
             "name":"ul_lat",
@@ -295,6 +156,171 @@
       "inputs":[
          {
             "name":"",
+            "type":"uint256"
+         }
+      ],
+      "name":"parcel_hash_list",
+      "outputs":[
+         {
+            "name":"",
+            "type":"bytes32"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_owner",
+            "type":"address"
+         }
+      ],
+      "name":"getParcelByOwner",
+      "outputs":[
+         {
+            "name":"",
+            "type":"bytes32"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_ul_lat",
+            "type":"uint8"
+         },
+         {
+            "name":"_ul_lng",
+            "type":"uint8"
+         },
+         {
+            "name":"_lr_lat",
+            "type":"uint8"
+         },
+         {
+            "name":"_lr_lng",
+            "type":"uint8"
+         },
+         {
+            "name":"_new_owner",
+            "type":"address"
+         },
+         {
+            "name":"_street_address",
+            "type":"string"
+         }
+      ],
+      "name":"createParcel",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_lat",
+            "type":"uint8"
+         },
+         {
+            "name":"_lng",
+            "type":"uint8"
+         }
+      ],
+      "name":"getParcelContainingLatLng",
+      "outputs":[
+         {
+            "name":"region",
+            "type":"bytes32"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_new_officer",
+            "type":"address"
+         },
+         {
+            "name":"_officer_type",
+            "type":"uint8"
+         }
+      ],
+      "name":"createOfficer",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_new_officer",
+            "type":"address"
+         }
+      ],
+      "name":"removeOfficer",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_parcel_hash",
+            "type":"bytes32"
+         }
+      ],
+      "name":"dissolveParcel",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_parcel_hash",
+            "type":"bytes32"
+         },
+         {
+            "name":"_new_owner",
+            "type":"address"
+         },
+         {
+            "name":"_new_owner_name",
+            "type":"string"
+         }
+      ],
+      "name":"transferParcel",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":true,
+      "inputs":[
+         {
+            "name":"",
             "type":"address"
          }
       ],
@@ -312,7 +338,7 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -338,7 +364,7 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -367,7 +393,7 @@
             "type":"address"
          },
          {
-            "name":"_local",
+            "name":"_notary",
             "type":"address"
          }
       ],
@@ -383,7 +409,7 @@
             "type":"uint8"
          }
       ],
-      "name":"debug",
+      "name":"debug_log",
       "type":"event"
    },
    {
@@ -403,7 +429,7 @@
       "inputs":[
          {
             "indexed":true,
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -433,11 +459,11 @@
          },
          {
             "indexed":true,
-            "name":"local",
+            "name":"notary",
             "type":"address"
          }
       ],
-      "name":"ActionExecuted",
+      "name":"actionExecuted",
       "type":"event"
    },
    {
@@ -445,7 +471,7 @@
       "inputs":[
          {
             "indexed":true,
-            "name":"region_hash",
+            "name":"parcel_hash",
             "type":"bytes32"
          },
          {
@@ -460,7 +486,7 @@
          },
          {
             "indexed":false,
-            "name":"local",
+            "name":"notary",
             "type":"address"
          },
          {
@@ -469,7 +495,7 @@
             "type":"address"
          }
       ],
-      "name":"CreateRegionExecuted",
+      "name":"createParcelExecuted",
       "type":"event"
    },
    {
@@ -477,7 +503,7 @@
       "inputs":[
          {
             "indexed":true,
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -506,7 +532,7 @@
             "type":"string"
          }
       ],
-      "name":"DissolvedRegion",
+      "name":"dissolvedParcel",
       "type":"event"
    },
    {
@@ -514,7 +540,7 @@
       "inputs":[
          {
             "indexed":true,
-            "name":"_region_hash",
+            "name":"_parcel_hash",
             "type":"bytes32"
          },
          {
@@ -523,7 +549,7 @@
             "type":"string"
          }
       ],
-      "name":"TransferedRegion",
+      "name":"transferedParcel",
       "type":"event"
    }
 ]
