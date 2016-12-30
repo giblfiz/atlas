@@ -31,8 +31,8 @@ class TransferPage extends React.Component {
       atlas: {},
       myAddresses: [],
       parcelHash: [],
-      newOwnerHash: '0x?',
-      newOwnerName: 'Doktor Suchandsuch',
+      newOwnerHash: '0x0',
+      newOwnerName: '0x0',
       upperLeftLat: 1000,
       upperLeftLng: 2000,
       lowerRightLat: 5000,
@@ -53,9 +53,12 @@ class TransferPage extends React.Component {
     this.handleChangeLowerRightLat = this.handleChangeLowerRightLat.bind(this);
     this.handleChangeLowerRightLng = this.handleChangeLowerRightLng.bind(this);
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
+
+    this.handleClickTransfer = this.handleClickTransfer.bind(this);
   }
 
   componentWillMount() {
+    // TODO load these non-jankily via redux actions
     this.setState({
       updateManager: web3.eth.contract(UPDATE_MANAGER_ABI).at(this.state.updateManagerAddress),
     }, () => {
@@ -125,6 +128,18 @@ class TransferPage extends React.Component {
     this.setState({ newParcelName: event.target.value });
   }
 
+  handleClickTransfer() {
+    this.state.atlas.transferParcel.sendTransaction(
+      this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
+      this.state.newOwnerHash,
+      this.state.newOwnerName,
+      {
+        from: this.state.myAddresses[0],
+        gas: 1000000,
+      },
+    );
+  }
+
   render() {
     return (
       <Layout className={s.content}>
@@ -139,7 +154,7 @@ class TransferPage extends React.Component {
         </select></label>
         <Input label="New Owner Hash" value={this.state.newOwnerHash} />
         <Input label="New Owner Name" value={this.state.newOwnerName} />
-        <div><Button type="raised">Transfer</Button></div>
+        <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
         <Input label="Upper Left lat" value={this.state.upperLeftLat} />
