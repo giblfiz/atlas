@@ -25,9 +25,10 @@ class TransferPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateManager: {},
       updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
+      updateManager: {},
       atlasAddress: '',
+      atlas: {},
       userHash: '0xGET_VIA_WEB3',
       parcelHash: '0x?',
       newOwnerHash: '0x?',
@@ -59,7 +60,9 @@ class TransferPage extends React.Component {
       updateManager: web3.eth.contract(UPDATE_MANAGER_ABI).at(this.state.updateManagerAddress),
     }, () => {
       const ATLAS_ADDRESS = this.state.updateManager.current_version();
-      this.setState({ atlasAddress: ATLAS_ADDRESS });
+      this.setState({ atlasAddress: ATLAS_ADDRESS }, () => {
+        this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) });
+      });
     });
   }
 
