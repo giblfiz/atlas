@@ -91,24 +91,36 @@ function populateParcelHashOptions(){
         })
         async_ittr++;
     })
-
-    // if(getAtlas().parcel_hash_list(i) != "0x"){
-    //   $('#parcel_hash').append($('<option>', {
-    //     value: getAtlas().parcel_hash_list(i),
-    //     text: getAtlas().parcel_map(getAtlas().parcel_hash_list(i))[5]
-    //   }));
-    // }
   }
 }
 
+
+
+
+function send(){
+  getAtlasAsync().then(atlas => {
+    return Promise.promisify(atlas.transferParcel.sendTransaction)(
+      $("#parcel_hash").val(),
+      $("#new_owner_addr").val(),
+      $("#new_owner_name").val(),
+      {
+        from:$("#me").val(),
+        gas:1000000
+      }
+    )
+  }).then(console.log);
+}
+
+
+
+//connect to interface
+$("#send").click(send);
+
+
+
 //lets set it up:
-getAtlasAsync().then(atlas=>{
-  console.log(atlas.address);
-  return null;
-})
 populateUserAddressOptions();
 populateParcelHashOptions();
-// console.log(getAtlasAsync().then(console.log));
 
 });
 
