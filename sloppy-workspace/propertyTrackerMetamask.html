@@ -3,6 +3,7 @@
 <title>Property Tracker</title>
 <script type="text/javascript" src="web3.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
 
 <script type="text/javascript">
 var update_manager; //this is for debuging from the console, and should be removed later
@@ -37,9 +38,11 @@ function getCurrentContractAddress(){
       update_manager_addr = "0x20deed01059bd6441717a1ffb42debff2eb8d037";
     }
 
-    update_manager = web3.eth.contract(update_manager_abi).at(update_manager_addr);
-    atlas_address = update_manager.current_version();
-    $("#contractAddress").val(atlas_address);
+    update_manager = Promise.promisifyAll(web3.eth.contract(update_manager_abi).at(update_manager_addr));
+
+    update_manager.current_versionAsync().then( contract_address =>{
+      $("#contractAddress").val(contract_address);
+    })
 
     //note... this should really be done with promises
     populateUserAddressOptions();
@@ -52,7 +55,7 @@ var atlas = null;
 function getAtlas(){
       if(atlas == null){
         contract_address = $("#contractAddress").val();
-        atlas = web3.eth.contract(atlas_abi).at(contract_address);
+        atlas = Promise.promisifyAll(web3.eth.contract(atlas_abi).at(contract_address));
       }
       return atlas;
 }
@@ -70,13 +73,26 @@ function populateUserAddressOptions(){
 }
 
 function populateParcelHashOptions(){
+  var last_hash
   for(i=0;i<10;i++){
-    if(getAtlas().parcel_hash_list(i) != "0x"){
+    getAtlas().parcel_hash_listAsync(i).then( hash => {
+      if(hash != "0x"){
+          last_hash = hash;
+          return getAtlas().parcel_mapAsync(i)()
+      }
+    }).then(parcel =>{
       $('#parcel_hash').append($('<option>', {
-        value: getAtlas().parcel_hash_list(i),
-        text: getAtlas().parcel_map(getAtlas().parcel_hash_list(i))[5]
+        value: last_hash,
+        text: parcel[5]
       }));
-    }
+    })
+
+    // if(getAtlas().parcel_hash_listAsync(i) != "0x"){
+    //   $('#parcel_hash').append($('<option>', {
+    //     value: getAtlas().parcel_hash_list(i),
+    //     text: getAtlas().parcel_map(getAtlas().parcel_hash_list(i))[5]
+    //   }));
+    // }
   }
 }
 
