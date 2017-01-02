@@ -94,7 +94,31 @@ function populateParcelHashOptions(){
   }
 }
 
-
+function updateValues() {
+      me = $("#me").val();
+      // balance = web3.eth.getBalance(me).toNumber();
+      // $("#balance").text(balance);
+      getAtlasAsync().then(atlas =>{
+          return atlas.officerAsync(me);
+      }).then(officer_type_number =>{
+        if(officer_type_number == 1){
+          ot = "Notary";
+        } else if(officer_type_number == 2){
+          ot = "Federal";
+        } else if(officer_type_number == 3){
+          ot = "Judicial";
+        } else if(officer_type_number == 0){
+          // if(getAtlas().parcel_map($("#parcel_hash").val())[6] == me){
+          //   ot = "Parcel Owner";
+          // } else {
+            ot = "Not an officer";
+          // }
+        }
+        $("#officer_type").text(
+          " " + ot
+        )
+      })
+}
 
 
 function send(){
@@ -115,6 +139,8 @@ function send(){
 
 //connect to interface
 $("#send").click(send);
+$("#me").change(updateValues);
+$("#me").click(updateValues);
 
 
 
