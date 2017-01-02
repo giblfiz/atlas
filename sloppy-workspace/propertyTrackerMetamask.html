@@ -73,11 +73,12 @@ function populateUserAddressOptions(){
 
 function populateParcelHashOptions(){
   $('#parcel_hash').html("");
+  var async_ittr = 0;
   for(i=0;i<10;i++){
     getAtlasAsync().then(atlas =>{
         Promise.all([
-          atlas.parcel_hash_listAsync(i),
-          atlas.parcel_hash_listAsync(i).then(hash =>{
+          atlas.parcel_hash_listAsync(async_ittr),
+          atlas.parcel_hash_listAsync(async_ittr).then(hash =>{
             return atlas.parcel_mapAsync(hash);
           })
         ]).then(results =>{
@@ -88,6 +89,7 @@ function populateParcelHashOptions(){
             }));
           }
         })
+        async_ittr++;
     })
 
     // if(getAtlas().parcel_hash_list(i) != "0x"){
@@ -105,7 +107,7 @@ getAtlasAsync().then(atlas=>{
   return null;
 })
 populateUserAddressOptions();
-// populateParcelHashOptions();
+populateParcelHashOptions();
 // console.log(getAtlasAsync().then(console.log));
 
 });
