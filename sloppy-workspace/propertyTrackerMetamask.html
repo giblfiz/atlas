@@ -69,6 +69,7 @@ function populateUserAddressOptions(){
       text: addr
     }));
   })
+  updateValues();
 }
 
 function populateParcelHashOptions(){
@@ -96,8 +97,10 @@ function populateParcelHashOptions(){
 
 function updateValues() {
       me = $("#me").val();
-      // balance = web3.eth.getBalance(me).toNumber();
-      // $("#balance").text(balance);
+      Promise.promisify(web3.eth.getBalance)(me).then(bal=>{
+        // console.log(bal);
+        $("#balance").text(web3.fromWei(bal.toNumber(),"ether"));
+      })
       getAtlasAsync().then(atlas =>{
           return atlas.officerAsync(me);
       }).then(officer_type_number =>{
@@ -216,7 +219,7 @@ LOWER RIGHT lat/lng:
 <hr/>
 <h2>Dynamic status Information</h2>
 <div>Status:<span id="status">...</span></div>
-<div>Balance[Wei]:<span id="balance">...</span></div>
+<div>Balance[Ether]:<span id="balance">...</span></div>
 <div>Officer type?<span id="officer_type">...</span></div>
 
 <br/>
