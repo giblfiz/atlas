@@ -83,6 +83,7 @@ function populateParcelHashOptions(){
             return atlas.parcel_mapAsync(hash);
           })
         ]).then(results =>{
+          console.log(results);
           if(results[0] != "0x"){
             $('#parcel_hash').append($('<option>', {
               value: results[0],
@@ -141,6 +142,21 @@ function send(){
   }).then(console.log);
 }
 
+function createParcel(ul_lat, ul_lng, lr_lat, lr_lng, street_address){
+  getAtlasAsync().then( atlas=>{
+  return Promise.promisify(atlas.createParcel.sendTransaction)(
+    ul_lat, ul_lng,
+    lr_lat, lr_lng,
+    $("#new_owner_addr").val(),
+    street_address,
+    {
+      from:$("#me").val(),
+      gas:1000000
+    }
+  );
+}).then(console.log);
+}
+
 
 
 //connect to interface
@@ -148,6 +164,15 @@ $("#send").click(send);
 
 $("#me").click(updateValues); //why wait for a change?
 $('#parcel_hash').click(updateValues); // why wait for a change?
+
+$("#create").click(function(){
+  createParcel(parseInt($("#ul_lat").val()),
+          parseInt($("#ul_lng").val()),
+          parseInt($("#lr_lat").val()),
+          parseInt($("#lr_lng").val()),
+          $("#street_address").val()
+          );
+});
 
 
 
