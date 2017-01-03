@@ -8,19 +8,31 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
+
+import { connect } from 'react-redux';
+import { getAtlas } from '../../actions';
+
 import Layout from '../../components/Layout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import s from './styles.css';
 import { title, html } from './index.md';
 
+
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-import ATLAS_ABI from './atlas_abi.json';
-import UPDATE_MANAGER_ABI from './update_manager_abi.json';
+// import ATLAS_ABI from './atlas_abi.json';
+// import UPDATE_MANAGER_ABI from './update_manager_abi.json';
 
-class TransferPage extends React.Component {
+class TransferPage extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    updateManagerAddress: PropTypes.string,
+    updateManager: PropTypes.object,
+    atlasAddress: PropTypes.string,
+    atlas: PropTypes.object,
+  }
 
   constructor(props) {
     super(props);
@@ -59,25 +71,42 @@ class TransferPage extends React.Component {
 
   componentWillMount() {
     // TODO load these non-jankily via redux actions
-    this.setState({
-      updateManager: web3.eth.contract(UPDATE_MANAGER_ABI).at(this.state.updateManagerAddress),
-    }, () => {
-      const ATLAS_ADDRESS = this.state.updateManager.current_version();
-      this.setState({ atlasAddress: ATLAS_ADDRESS }, () => {
-        this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) }, () => {
-          const parcelHash = [];
-          for (let i = 0; i < 10; i++) {
-            if (this.state.atlas.parcel_hash_list(i) !== '0x') {
-              parcelHash.push({
-                value: this.state.atlas.parcel_hash_list(i),
-                text: this.state.atlas.parcel_map(this.state.atlas.parcel_hash_list(i))[5],
-              });
-            }
-          }
-          this.setState({ parcelHash });
+    // this.setState({
+    //   updateManager: web3.eth.contract(UPDATE_MANAGER_ABI).at(this.state.updateManagerAddress),
+    // }, () => {
+    //   const ATLAS_ADDRESS = this.state.updateManager.current_version();
+    //   this.setState({ atlasAddress: ATLAS_ADDRESS }, () => {
+    //     this.setState({ atlas: web3.eth.contract(ATLAS_ABI).at(this.state.atlasAddress) }, () => {
+    //       const parcelHash = [];
+    //       for (let i = 0; i < 10; i++) {
+    //         if (this.state.atlas.parcel_hash_list(i) !== '0x') {
+    //           parcelHash.push({
+    //             value: this.state.atlas.parcel_hash_list(i),
+    //             text: this.state.atlas.parcel_map(this.state.atlas.parcel_hash_list(i))[5],
+    //           });
+    //         }
+    //       }
+    //       this.setState({ parcelHash });
+    //     });
+    //   });
+    // });
+
+    getAtlas();
+    
+    const { updateManagerAddress, updateManager, atlasAddress, atlas } = this.props;
+    console.log('updateManagerAddress, updateManager, atlasAddress, atlas');
+    console.log(updateManagerAddress, updateManager, atlasAddress, atlas);
+
+    const parcelHash = [];
+    for (let i = 0; i < 10; i++) {
+      if (this.state.atlas.parcel_hash_list(i) !== '0x') {
+        parcelHash.push({
+          value: this.state.atlas.parcel_hash_list(i),
+          text: this.state.atlas.parcel_map(this.state.atlas.parcel_hash_list(i))[5],
         });
-      });
-    });
+      }
+    }
+    this.setState({ parcelHash });
 
     this.setState({
       myAddresses: web3.eth.accounts,
@@ -178,4 +207,10 @@ class TransferPage extends React.Component {
 
 }
 
-export default TransferPage;
+// TODO add complexity like isFetching when needed
+const mapStateToProps = state => {
+  const { updateManagerAddress, updateManager, atlasAddress, atlas } = state;
+  return { updateManagerAddress, updateManager, atlasAddress, atlas };
+};
+
+export default connect(mapStateToProps)(TransferPage);
