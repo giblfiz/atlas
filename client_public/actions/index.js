@@ -1,4 +1,4 @@
-// import Promise from 'bluebird';
+import Promise from 'bluebird';
 
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
@@ -21,5 +21,8 @@ export const getAtlas = updateManagerAddress => {
   output.atlasAddress = output.updateManager.current_version();
   output.atlas = web3.eth.contract(ATLAS_ABI).at(output.atlasAddress);
 
-  return output;
+  return {
+    type: GET_ATLAS,
+    payload: Promise.resolve(output),
+  };
 };

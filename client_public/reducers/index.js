@@ -8,10 +8,10 @@ const contracts = (state = {}, action) => {
     case GET_ATLAS:
       return {
         // ...state,
-        updateManagerAddress: action.updateManagerAddress,
-        updateManager: action.updateManager,
-        atlasAddress: action.atlasAddress,
-        atlas: action.atlas,
+        updateManagerAddress: action.payload.updateManagerAddress,
+        updateManager: action.payload.updateManager,
+        atlasAddress: action.payload.atlasAddress,
+        atlas: action.payload.atlas,
       };
     default:
       return state;
