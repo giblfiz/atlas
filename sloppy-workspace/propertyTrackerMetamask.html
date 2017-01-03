@@ -96,12 +96,14 @@ function populateParcelHashOptions(){
 }
 
 function updateValues() {
+      big_atlas = null;
       me = $("#me").val();
       Promise.promisify(web3.eth.getBalance)(me).then(bal=>{
         // console.log(bal);
         $("#balance").text(web3.fromWei(bal.toNumber(),"ether"));
       })
       getAtlasAsync().then(atlas =>{
+          big_atlas = atlas;
           return atlas.officerAsync(me);
       }).then(officer_type_number =>{
         if(officer_type_number == 1){
@@ -111,15 +113,16 @@ function updateValues() {
         } else if(officer_type_number == 3){
           ot = "Judicial";
         } else if(officer_type_number == 0){
-          // if(getAtlas().parcel_map($("#parcel_hash").val())[6] == me){
-          //   ot = "Parcel Owner";
-          // } else {
             ot = "Not an officer";
-          // }
         }
-        $("#officer_type").text(
-          " " + ot
-        )
+
+        $("#officer_type").text(" " + ot);
+        return big_atlas.parcel_mapAsync($("#parcel_hash").val());
+
+      }).then(parcel => {
+          if(parcel[6] == $("#me").val()){
+            $("#officer_type").text(" Parcel Owner");
+          }
       })
 }
 
@@ -142,8 +145,10 @@ function send(){
 
 //connect to interface
 $("#send").click(send);
-$("#me").change(updateValues);
-$("#me").click(updateValues);
+
+$("#me").click(updateValues); //why wait for a change?
+$('#parcel_hash').click(updateValues); // why wait for a change?
+
 
 
 
