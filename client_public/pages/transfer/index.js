@@ -204,18 +204,24 @@ class TransferPage extends Component {
         <label>Parcel: <select>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
         </select></label>
-        <Input label="New Owner Hash" value={this.state.newOwnerHash} />
+        <Input label="New Owner Hash" value={this.state.newOwnerHash}
+        handleValueChange={this.handleChangeNewOwnerHash} />
         <Input type="text" label="New Owner Name"
           value={this.state.newOwnerName}
           handleValueChange={this.handleChangeNewOwnerName} />
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
-        <Input label="Upper Left lat" value={this.state.upperLeftLat} />
-        <Input label="Upper Left lng" value={this.state.upperLeftLng} />
-        <Input label="Lower Right lat" value={this.state.lowerRightLat} />
-        <Input label="Lower Right lng" value={this.state.lowerRightLng} />
-        <Input label="New Parcel Name" value={this.state.newParcelName} />
+        <Input label="Upper Left lat" value={this.state.upperLeftLat}
+          handleValueChange={this.handleChangeUpperLeftLat}/>
+        <Input label="Upper Left lng" value={this.state.upperLeftLng}
+          handleValueChange={this.handleChangeUpperLeftLng}/>
+        <Input label="Lower Right lat" value={this.state.lowerRightLat}
+          handleValueChange={this.handleChangeLowerRightLat}/>
+        <Input label="Lower Right lng" value={this.state.lowerRightLng}
+          handleValueChange={this.handleChangeLowerRightLng}/>
+        <Input label="New Parcel Name" value={this.state.newParcelName}
+          handleValueChange={this.handleChangeNewParcelName}/>
         <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
         <h4>Dynamic Status Information</h4>
