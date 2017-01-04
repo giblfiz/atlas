@@ -97,7 +97,7 @@ class TransferPage extends Component {
 
       this.setState({
         pacelhashActive:parcelHash[0].value,
-        parcelActive: this.props.atlas.parcel_map(parcelHash[0].value)
+        parcelActive: atlas.parcel_map(parcelHash[0].value)
       });
 
       this.setState({
@@ -106,7 +106,7 @@ class TransferPage extends Component {
         balance: web3.fromWei(
            web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
            "ether"),
-        officerType:  this.getOfficerType(web3.eth.accounts[0])
+        officerType:  this.getOfficerType(web3.eth.accounts[0], atlas)
       });
     }
   }
@@ -115,8 +115,12 @@ class TransferPage extends Component {
     this.setState({ updateManagerAddress: event.target.value });
   }
 
-  getOfficerType = (account_address) => {
-        var officer_type_number = this.props.atlas.officer(account_address);
+  getOfficerType = (account_address, atlas = null) => {
+        if(atlas == null){
+          var officer_type_number = this.props.atlas.officer(account_address);
+        } else {
+          var officer_type_number = atlas.officer(account_address);
+        }
         var ot="";
         if(officer_type_number == 1){
           ot = "Notary";
