@@ -96,7 +96,13 @@ class TransferPage extends Component {
       this.setState({ parcelHash });
 
       this.setState({
+        pacelhashActive:parcelHash[0].value,
+        parcelActive: this.props.atlas.parcel_map(parcelHash[0].value)
+      });
+
+      this.setState({
         myAddresses: web3.eth.accounts,
+        myAddress:web3.eth.accounts[0]
       });
     }
   }
