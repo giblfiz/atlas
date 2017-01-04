@@ -40,6 +40,7 @@ class TransferPage extends Component {
       myAddresses: [],
       myAddress: '',
       parcelHash: [],
+      parcelHashActive: '',
       newOwnerHash: '0x0',
       newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
@@ -131,7 +132,7 @@ class TransferPage extends Component {
   }
 
   handleChangeParcelHash(event) {
-    this.setState({ parcelHash: event.target.value });
+    this.setState({ parcelHashActive: event.target.value });
   }
 
   handleChangeNewOwnerHash(event) {
@@ -169,7 +170,7 @@ class TransferPage extends Component {
 
   handleClickTransfer() {
     this.props.atlas.transferParcel.sendTransaction(
-      this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
+      this.state.parcelHashActive,
       this.state.newOwnerHash,
       this.state.newOwnerName,
       {
@@ -201,9 +202,10 @@ class TransferPage extends Component {
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
         <h4>Transfer a Parcel</h4>
-        <label>Parcel: <select>
+        <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
-        </select></label>
+        </select>
+        <p>{this.state.parcelHashActive}</p></label>
         <Input label="New Owner Hash" value={this.state.newOwnerHash}
         handleValueChange={this.handleChangeNewOwnerHash} />
         <Input type="text" label="New Owner Name"
