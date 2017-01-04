@@ -41,6 +41,7 @@ class TransferPage extends Component {
       myAddress: '',
       parcelHash: [],
       parcelHashActive: '',
+      parcelActive: [],
       newOwnerHash: '0x0',
       newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
@@ -122,9 +123,7 @@ class TransferPage extends Component {
   };
 
   handleChangeMyAddresses(event) {
-    console.log("helloworld");
-    console.log(event.target);
-    this.setState({myAddress: [event.target.value],
+    this.setState({myAddress: event.target.value,
                    balance: web3.fromWei(
                       web3.eth.getBalance(event.target.value).toNumber(),
                       "ether"),
@@ -132,7 +131,9 @@ class TransferPage extends Component {
   }
 
   handleChangeParcelHash(event) {
-    this.setState({ parcelHashActive: event.target.value });
+    this.setState({ parcelHashActive: event.target.value,
+                    parcelActive: this.props.atlas.parcel_map(event.target.value)});
+    console.log(this.state.parcelActive, this.state.parcelHashActive, this.state.newOwnerHash);
   }
 
   handleChangeNewOwnerHash(event) {
@@ -174,7 +175,7 @@ class TransferPage extends Component {
       this.state.newOwnerHash,
       this.state.newOwnerName,
       {
-        from: this.state.myAddresses[0],
+        from: this.state.myAddress,
         gas: 1000000,
       },
     );
@@ -182,15 +183,23 @@ class TransferPage extends Component {
 
   handleClickCreate(){
     this.props.atlas.createParcel.sendTransaction(
-      ul_lat, ul_lng,
-      lr_lat, lr_lng,
-      $("#new_owner_addr").val(),
-      street_address,
+      this.state.upperLeftLat,
+      this.state.upperLeftLng,
+      this.state.lowerRightLat,
+      this.state.lowerRightLng,
+      "0x0",
+      this.state.newParcelName,
       {
-        from:$("#me").val(),
+        from: this.state.myAddress,
         gas:1000000
       }
     )
+  }
+
+  getParcelOwnerString(parcel){
+    if(parcel[5]){
+      return parcel[5] + " owner is ''" + parcel[4] + "'' addr:" + parcel[6];
+    } else { return " "}
   }
 
   render() {
@@ -205,7 +214,7 @@ class TransferPage extends Component {
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
         </select>
-        <p>{this.state.parcelHashActive}</p></label>
+        <p>{this.getParcelOwnerString(this.state.parcelActive)}</p></label>
         <Input label="New Owner Hash" value={this.state.newOwnerHash}
         handleValueChange={this.handleChangeNewOwnerHash} />
         <Input type="text" label="New Owner Name"
