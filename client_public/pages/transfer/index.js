@@ -66,6 +66,8 @@ class TransferPage extends Component {
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
+    this.handleClickCreate = this.handleClickCreate.bind(this);
+
   }
 
   componentWillMount() {
@@ -77,10 +79,7 @@ class TransferPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log('nextProps', nextProps);
     const { updateManagerAddress, updateManager, atlasAddress, atlas } = nextProps;
-    // console.log('updateManagerAddress, updateManager, atlasAddress, atlas');
-    // console.log(updateManagerAddress, updateManager, atlasAddress, atlas);
     if (updateManagerAddress !== undefined
         && updateManager !== undefined
         && atlasAddress !== undefined
@@ -107,7 +106,6 @@ class TransferPage extends Component {
   }
 
   getOfficerType = (account_address) => {
-    // console.log(this.props.atlas);
         var officer_type_number = this.props.atlas.officer(account_address);
         var ot="";
         if(officer_type_number == 1){
@@ -133,7 +131,6 @@ class TransferPage extends Component {
   handleChangeParcelHash(event) {
     this.setState({ parcelHashActive: event.target.value,
                     parcelActive: this.props.atlas.parcel_map(event.target.value)});
-    console.log(this.state.parcelActive, this.state.parcelHashActive, this.state.newOwnerHash);
   }
 
   handleChangeNewOwnerHash(event) {
