@@ -29,7 +29,6 @@ class TransferPage extends Component {
     updateManagerAddress: PropTypes.string,
     updateManager: PropTypes.object,
     atlasAddress: PropTypes.string,
-    atlas: PropTypes.object,
   }
 
   constructor(props) {
@@ -38,7 +37,6 @@ class TransferPage extends Component {
       updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
       updateManager: {},
       atlasAddress: '',
-      atlas: {},
       myAddresses: [],
       parcelHash: [],
       newOwnerHash: '0x0',
@@ -50,7 +48,7 @@ class TransferPage extends Component {
       newParcelName: 'Somewhere Lovely',
       status: '',
       balance: '',
-      officerType: '',
+      officerType: 'Unset Yet',
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -80,8 +78,10 @@ class TransferPage extends Component {
     const { updateManagerAddress, updateManager, atlasAddress, atlas } = nextProps;
     // console.log('updateManagerAddress, updateManager, atlasAddress, atlas');
     // console.log(updateManagerAddress, updateManager, atlasAddress, atlas);
-    if (updateManagerAddress !== undefined && updateManager !== undefined &&
-      atlasAddress !== undefined && atlas !== undefined) {
+    if (updateManagerAddress !== undefined
+        && updateManager !== undefined
+        && atlasAddress !== undefined
+        && atlas !== undefined) {
       const parcelHash = [];
       for (let i = 0; i < 10; i++) {
         if (atlas.parcel_hash_list(i) !== '0x') {
@@ -103,8 +103,28 @@ class TransferPage extends Component {
     this.setState({ updateManagerAddress: event.target.value });
   }
 
+  getOfficerType = (account_address) => {
+    // console.log(this.props.atlas);
+        var officer_type_number = this.props.atlas.officer(account_address);
+        var ot="";
+        if(officer_type_number == 1){
+          ot = "Notary";
+        } else if(officer_type_number == 2){
+          ot = "Federal";
+        } else if(officer_type_number == 3){
+          ot = "Judicial";
+        } else if(officer_type_number == 0){
+            ot = "Not an officer";
+        }
+        return ot;
+  };
+
   handleChangeMyAddresses(event) {
-    this.setState({ myAddresses: event.target.value });
+    console.log("helloworld");
+    console.log(event.target);
+    this.setState({myAddresses: [event.target.value],
+                   balance: web3.eth.getBalance(event.target.value).toNumber(),
+                  officerType:  this.getOfficerType(event.target.value)});
   }
 
   handleChangeParcelHash(event) {
@@ -139,6 +159,11 @@ class TransferPage extends Component {
     this.setState({ newParcelName: event.target.value });
   }
 
+  handleChangeOfficerType(event) {
+    this.setState({ officerType: event.target.value });
+  }
+
+
   handleClickTransfer() {
     this.state.atlas.transferParcel.sendTransaction(
       this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
@@ -156,7 +181,7 @@ class TransferPage extends Component {
       <Layout className={s.content}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.props.atlasAddress} />
-        <label>My Address: <select>
+        <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
         <h4>Transfer a Parcel</h4>
