@@ -52,7 +52,7 @@ class TransferPage extends Component {
       status: '',
       balance: '',
       officerType: '',
-      map_center: [37.7649791, -122.45551060000001],
+      map_center: [33.678, -116.243],
       map_zoom: 9,
     };
 
@@ -68,6 +68,8 @@ class TransferPage extends Component {
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
+
+    this.handleGoogleApiLoaded = this.handleGoogleApiLoaded.bind(this);
   }
 
   componentWillMount() {
@@ -154,6 +156,24 @@ class TransferPage extends Component {
     );
   }
 
+  handleGoogleApiLoaded({ map, maps }) {
+    console.log(map, maps);
+    new maps.Rectangle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map,
+      bounds: {
+        north: 33.685,
+        south: 33.671,
+        east: -116.234,
+        west: -116.251,
+      },
+    });
+  }
+
   render() {
     return (
       <Layout className={s.content}>
@@ -182,6 +202,7 @@ class TransferPage extends Component {
             center={this.state.map_center}
             zoom={this.state.map_zoom}
             draggable={false}
+            onGoogleApiLoaded={this.handleGoogleApiLoaded}
           />
         </div>
         <div><Button type="raised">Create</Button></div>
