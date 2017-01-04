@@ -168,7 +168,7 @@ class TransferPage extends Component {
 
 
   handleClickTransfer() {
-    this.props.getAtlas.transferParcel.sendTransaction(
+    this.props.atlas.transferParcel.sendTransaction(
       this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
       this.state.newOwnerHash,
       this.state.newOwnerName,
@@ -180,7 +180,7 @@ class TransferPage extends Component {
   }
 
   handleClickCreate(){
-    this.props.getAtlas().createParcel.sendTransaction(
+    this.props.atlas.createParcel.sendTransaction(
       ul_lat, ul_lng,
       lr_lat, lr_lng,
       $("#new_owner_addr").val(),
