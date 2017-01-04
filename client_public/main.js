@@ -16,12 +16,18 @@ import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 
-import store from './core/store';
+import { createStore, applyMiddleware } from 'redux';
+import promise from 'redux-promise';
+
+import reducer from './reducers';
 import router from './core/router';
 import history from './core/history';
 
 let routes = require('./routes.json'); // Loaded with utils/routes-loader.js
 const container = document.getElementById('container');
+
+const middleware = [promise];
+const store = createStore(reducer, applyMiddleware(...middleware));
 
 function renderComponent(component) {
   ReactDOM.render(<Provider store={store}>{component}</Provider>, container);
