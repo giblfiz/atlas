@@ -102,7 +102,11 @@ class TransferPage extends Component {
 
       this.setState({
         myAddresses: web3.eth.accounts,
-        myAddress:web3.eth.accounts[0]
+        myAddress:web3.eth.accounts[0],
+        balance: web3.fromWei(
+           web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
+           "ether"),
+        officerType:  this.getOfficerType(web3.eth.accounts[0])
       });
     }
   }
@@ -242,7 +246,6 @@ class TransferPage extends Component {
         <span>Status: {this.state.status}</span><br />
         <span>Balance (Ether): {this.state.balance}</span><br />
         <span>Officer Type: {this.state.officerType}</span>
-        <div><Button type="raised">Update</Button></div>
         <p>
           <br /><br />
         </p>
