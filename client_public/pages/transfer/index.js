@@ -38,6 +38,7 @@ class TransferPage extends Component {
       updateManager: {},
       atlasAddress: '',
       myAddresses: [],
+      myAddress: '',
       parcelHash: [],
       newOwnerHash: '0x0',
       newOwnerName: '0x0',
@@ -122,9 +123,11 @@ class TransferPage extends Component {
   handleChangeMyAddresses(event) {
     console.log("helloworld");
     console.log(event.target);
-    this.setState({myAddresses: [event.target.value],
-                   balance: web3.eth.getBalance(event.target.value).toNumber(),
-                  officerType:  this.getOfficerType(event.target.value)});
+    this.setState({myAddress: [event.target.value],
+                   balance: web3.fromWei(
+                      web3.eth.getBalance(event.target.value).toNumber(),
+                      "ether"),
+                   officerType:  this.getOfficerType(event.target.value)});
   }
 
   handleChangeParcelHash(event) {
@@ -202,7 +205,7 @@ class TransferPage extends Component {
         <hr />
         <h4>Dynamic Status Information</h4>
         <span>Status: {this.state.status}</span><br />
-        <span>Balance (wei): {this.state.balance}</span><br />
+        <span>Balance (Ether): {this.state.balance}</span><br />
         <span>Officer Type: {this.state.officerType}</span>
         <div><Button type="raised">Update</Button></div>
         <p>
