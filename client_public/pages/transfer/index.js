@@ -19,6 +19,7 @@ import Button from '../../components/Button';
 import s from './styles.css';
 import { title, html } from './index.md';
 
+import GoogleMap from 'google-map-react';
 
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
@@ -51,6 +52,8 @@ class TransferPage extends Component {
       status: '',
       balance: '',
       officerType: '',
+      map_center: [37.7649791, -122.45551060000001],
+      map_zoom: 9,
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -173,6 +176,14 @@ class TransferPage extends Component {
         <Input label="Lower Right lat" value={this.state.lowerRightLat} />
         <Input label="Lower Right lng" value={this.state.lowerRightLng} />
         <Input label="New Parcel Name" value={this.state.newParcelName} />
+        <div style={{ width: 400, height: 400 }}>
+          <GoogleMap
+            bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'.split('').reverse().join('') }}
+            center={this.state.map_center}
+            zoom={this.state.map_zoom}
+            draggable={false}
+          />
+        </div>
         <div><Button type="raised">Create</Button></div>
         <hr />
         <h4>Dynamic Status Information</h4>
