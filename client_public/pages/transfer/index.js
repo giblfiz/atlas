@@ -41,7 +41,7 @@ class TransferPage extends Component {
       myAddress: '',
       parcelHash: [],
       newOwnerHash: '0x0',
-      newOwnerName: '0x0',
+      newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
       upperLeftLng: 2000,
       lowerRightLat: 5000,
@@ -168,7 +168,7 @@ class TransferPage extends Component {
 
 
   handleClickTransfer() {
-    this.state.atlas.transferParcel.sendTransaction(
+    this.props.getAtlas.transferParcel.sendTransaction(
       this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
       this.state.newOwnerHash,
       this.state.newOwnerName,
@@ -177,6 +177,19 @@ class TransferPage extends Component {
         gas: 1000000,
       },
     );
+  }
+
+  handleClickCreate(){
+    this.props.getAtlas().createParcel.sendTransaction(
+      ul_lat, ul_lng,
+      lr_lat, lr_lng,
+      $("#new_owner_addr").val(),
+      street_address,
+      {
+        from:$("#me").val(),
+        gas:1000000
+      }
+    )
   }
 
   render() {
@@ -188,11 +201,13 @@ class TransferPage extends Component {
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
         <h4>Transfer a Parcel</h4>
-        <label>Parcel Hash: <select>
+        <label>Parcel: <select>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
         </select></label>
         <Input label="New Owner Hash" value={this.state.newOwnerHash} />
-        <Input label="New Owner Name" value={this.state.newOwnerName} />
+        <Input type="text" label="New Owner Name"
+          value={this.state.newOwnerName}
+          handleValueChange={this.handleChangeNewOwnerName} />
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
@@ -201,7 +216,7 @@ class TransferPage extends Component {
         <Input label="Lower Right lat" value={this.state.lowerRightLat} />
         <Input label="Lower Right lng" value={this.state.lowerRightLng} />
         <Input label="New Parcel Name" value={this.state.newParcelName} />
-        <div><Button type="raised">Create</Button></div>
+        <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
         <h4>Dynamic Status Information</h4>
         <span>Status: {this.state.status}</span><br />
