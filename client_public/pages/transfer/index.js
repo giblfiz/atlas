@@ -29,7 +29,6 @@ class TransferPage extends Component {
     updateManagerAddress: PropTypes.string,
     updateManager: PropTypes.object,
     atlasAddress: PropTypes.string,
-    atlas: PropTypes.object,
   }
 
   constructor(props) {
@@ -38,11 +37,13 @@ class TransferPage extends Component {
       updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
       updateManager: {},
       atlasAddress: '',
-      atlas: {},
       myAddresses: [],
+      myAddress: '',
       parcelHash: [],
+      parcelHashActive: '',
+      parcelActive: [],
       newOwnerHash: '0x0',
-      newOwnerName: '0x0',
+      newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
       upperLeftLng: 2000,
       lowerRightLat: 5000,
@@ -50,7 +51,7 @@ class TransferPage extends Component {
       newParcelName: 'Somewhere Lovely',
       status: '',
       balance: '',
-      officerType: '',
+      officerType: 'Unset Yet',
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -65,6 +66,8 @@ class TransferPage extends Component {
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
+    this.handleClickCreate = this.handleClickCreate.bind(this);
+
   }
 
   componentWillMount() {
@@ -76,12 +79,11 @@ class TransferPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log('nextProps', nextProps);
     const { updateManagerAddress, updateManager, atlasAddress, atlas } = nextProps;
-    // console.log('updateManagerAddress, updateManager, atlasAddress, atlas');
-    // console.log(updateManagerAddress, updateManager, atlasAddress, atlas);
-    if (updateManagerAddress !== undefined && updateManager !== undefined &&
-      atlasAddress !== undefined && atlas !== undefined) {
+    if (updateManagerAddress !== undefined
+        && updateManager !== undefined
+        && atlasAddress !== undefined
+        && atlas !== undefined) {
       const parcelHash = [];
       for (let i = 0; i < 10; i++) {
         if (atlas.parcel_hash_list(i) !== '0x') {
@@ -94,7 +96,17 @@ class TransferPage extends Component {
       this.setState({ parcelHash });
 
       this.setState({
+        pacelhashActive:parcelHash[0].value,
+        parcelActive: this.props.atlas.parcel_map(parcelHash[0].value)
+      });
+
+      this.setState({
         myAddresses: web3.eth.accounts,
+        myAddress:web3.eth.accounts[0],
+        balance: web3.fromWei(
+           web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
+           "ether"),
+        officerType:  this.getOfficerType(web3.eth.accounts[0])
       });
     }
   }
@@ -103,12 +115,32 @@ class TransferPage extends Component {
     this.setState({ updateManagerAddress: event.target.value });
   }
 
+  getOfficerType = (account_address) => {
+        var officer_type_number = this.props.atlas.officer(account_address);
+        var ot="";
+        if(officer_type_number == 1){
+          ot = "Notary";
+        } else if(officer_type_number == 2){
+          ot = "Federal";
+        } else if(officer_type_number == 3){
+          ot = "Judicial";
+        } else if(officer_type_number == 0){
+            ot = "Not an officer";
+        }
+        return ot;
+  };
+
   handleChangeMyAddresses(event) {
-    this.setState({ myAddresses: event.target.value });
+    this.setState({myAddress: event.target.value,
+                   balance: web3.fromWei(
+                      web3.eth.getBalance(event.target.value).toNumber(),
+                      "ether"),
+                   officerType:  this.getOfficerType(event.target.value)});
   }
 
   handleChangeParcelHash(event) {
-    this.setState({ parcelHash: event.target.value });
+    this.setState({ parcelHashActive: event.target.value,
+                    parcelActive: this.props.atlas.parcel_map(event.target.value)});
   }
 
   handleChangeNewOwnerHash(event) {
@@ -139,16 +171,42 @@ class TransferPage extends Component {
     this.setState({ newParcelName: event.target.value });
   }
 
+  handleChangeOfficerType(event) {
+    this.setState({ officerType: event.target.value });
+  }
+
+
   handleClickTransfer() {
-    this.state.atlas.transferParcel.sendTransaction(
-      this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
+    this.props.atlas.transferParcel.sendTransaction(
+      this.state.parcelHashActive,
       this.state.newOwnerHash,
       this.state.newOwnerName,
       {
-        from: this.state.myAddresses[0],
+        from: this.state.myAddress,
         gas: 1000000,
       },
     );
+  }
+
+  handleClickCreate(){
+    this.props.atlas.createParcel.sendTransaction(
+      this.state.upperLeftLat,
+      this.state.upperLeftLng,
+      this.state.lowerRightLat,
+      this.state.lowerRightLng,
+      "0x0",
+      this.state.newParcelName,
+      {
+        from: this.state.myAddress,
+        gas:1000000
+      }
+    )
+  }
+
+  getParcelOwnerString(parcel){
+    if(parcel[5]){
+      return parcel[5] + " owner is ''" + parcel[4] + "'' addr:" + parcel[6];
+    } else { return " "}
   }
 
   render() {
@@ -156,30 +214,38 @@ class TransferPage extends Component {
       <Layout className={s.content}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.props.atlasAddress} />
-        <label>My Address: <select>
+        <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
         <h4>Transfer a Parcel</h4>
-        <label>Parcel Hash: <select>
+        <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
-        </select></label>
-        <Input label="New Owner Hash" value={this.state.newOwnerHash} />
-        <Input label="New Owner Name" value={this.state.newOwnerName} />
+        </select>
+        <p>{this.getParcelOwnerString(this.state.parcelActive)}</p></label>
+        <Input label="New Owner Hash" value={this.state.newOwnerHash}
+        handleValueChange={this.handleChangeNewOwnerHash} />
+        <Input type="text" label="New Owner Name"
+          value={this.state.newOwnerName}
+          handleValueChange={this.handleChangeNewOwnerName} />
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
-        <Input label="Upper Left lat" value={this.state.upperLeftLat} />
-        <Input label="Upper Left lng" value={this.state.upperLeftLng} />
-        <Input label="Lower Right lat" value={this.state.lowerRightLat} />
-        <Input label="Lower Right lng" value={this.state.lowerRightLng} />
-        <Input label="New Parcel Name" value={this.state.newParcelName} />
-        <div><Button type="raised">Create</Button></div>
+        <Input label="Upper Left lat" value={this.state.upperLeftLat}
+          handleValueChange={this.handleChangeUpperLeftLat}/>
+        <Input label="Upper Left lng" value={this.state.upperLeftLng}
+          handleValueChange={this.handleChangeUpperLeftLng}/>
+        <Input label="Lower Right lat" value={this.state.lowerRightLat}
+          handleValueChange={this.handleChangeLowerRightLat}/>
+        <Input label="Lower Right lng" value={this.state.lowerRightLng}
+          handleValueChange={this.handleChangeLowerRightLng}/>
+        <Input label="New Parcel Name" value={this.state.newParcelName}
+          handleValueChange={this.handleChangeNewParcelName}/>
+        <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
         <h4>Dynamic Status Information</h4>
         <span>Status: {this.state.status}</span><br />
-        <span>Balance (wei): {this.state.balance}</span><br />
+        <span>Balance (Ether): {this.state.balance}</span><br />
         <span>Officer Type: {this.state.officerType}</span>
-        <div><Button type="raised">Update</Button></div>
         <p>
           <br /><br />
         </p>
