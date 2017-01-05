@@ -1,5 +1,27 @@
 [
    {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_target_officer",
+            "type":"address"
+         },
+         {
+            "name":"_action_id",
+            "type":"uint8"
+         }
+      ],
+      "name":"isPendingFormalSigned",
+      "outputs":[
+         {
+            "name":"",
+            "type":"bool"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
       "constant":true,
       "inputs":[
          {
@@ -18,8 +40,8 @@
             "type":"uint8"
          },
          {
-            "name":"owner_signature",
-            "type":"address"
+            "name":"owner_hash",
+            "type":"bytes32"
          },
          {
             "name":"notary_signature",
@@ -45,35 +67,16 @@
             "type":"bytes32"
          },
          {
-            "name":"_new_owner",
-            "type":"address"
-         },
-         {
-            "name":"_action_id",
-            "type":"uint8"
-         }
-      ],
-      "name":"pendingExecuted",
-      "outputs":[
-
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_parcel_hash",
+            "name":"_new_owner_hash",
             "type":"bytes32"
          },
          {
-            "name":"_new_owner",
-            "type":"address"
-         },
-         {
             "name":"_action_id",
             "type":"uint8"
+         },
+         {
+            "name":"_owner_key",
+            "type":"string"
          }
       ],
       "name":"signPending",
@@ -87,11 +90,7 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_parcel_hash",
-            "type":"bytes32"
-         },
-         {
-            "name":"_new_owner",
+            "name":"_target_officer",
             "type":"address"
          },
          {
@@ -99,12 +98,9 @@
             "type":"uint8"
          }
       ],
-      "name":"getPendingActionHash",
+      "name":"signPending",
       "outputs":[
-         {
-            "name":"",
-            "type":"bytes32"
-         }
+
       ],
       "payable":false,
       "type":"function"
@@ -145,7 +141,33 @@
          },
          {
             "name":"owner",
-            "type":"address"
+            "type":"bytes32"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_parcel_hash",
+            "type":"bytes32"
+         },
+         {
+            "name":"_new_owner",
+            "type":"bytes32"
+         },
+         {
+            "name":"_action_id",
+            "type":"uint8"
+         }
+      ],
+      "name":"isPendingOwnerSigned",
+      "outputs":[
+         {
+            "name":"",
+            "type":"bool"
          }
       ],
       "payable":false,
@@ -160,24 +182,6 @@
          }
       ],
       "name":"parcel_hash_list",
-      "outputs":[
-         {
-            "name":"",
-            "type":"bytes32"
-         }
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_owner",
-            "type":"address"
-         }
-      ],
-      "name":"getParcelByOwner",
       "outputs":[
          {
             "name":"",
@@ -208,7 +212,7 @@
          },
          {
             "name":"_new_owner",
-            "type":"address"
+            "type":"bytes32"
          },
          {
             "name":"_street_address",
@@ -240,6 +244,33 @@
             "name":"region",
             "type":"bytes32"
          }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_parcel_hash",
+            "type":"bytes32"
+         },
+         {
+            "name":"_new_owner",
+            "type":"bytes32"
+         },
+         {
+            "name":"_new_owner_name",
+            "type":"string"
+         },
+         {
+            "name":"_owner_key",
+            "type":"string"
+         }
+      ],
+      "name":"transferParcel",
+      "outputs":[
+
       ],
       "payable":false,
       "type":"function"
@@ -302,16 +333,60 @@
          },
          {
             "name":"_new_owner",
-            "type":"address"
+            "type":"bytes32"
          },
          {
-            "name":"_new_owner_name",
+            "name":"_action_id",
+            "type":"uint8"
+         }
+      ],
+      "name":"pendingExecuted",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_key",
             "type":"string"
          }
       ],
-      "name":"transferParcel",
+      "name":"key2Hash",
       "outputs":[
-
+         {
+            "name":"",
+            "type":"bytes32"
+         }
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
+            "name":"_parcel_hash",
+            "type":"bytes32"
+         },
+         {
+            "name":"_new_owner",
+            "type":"bytes32"
+         },
+         {
+            "name":"_action_id",
+            "type":"uint8"
+         }
+      ],
+      "name":"getPendingActionHash",
+      "outputs":[
+         {
+            "name":"",
+            "type":"bytes32"
+         }
       ],
       "payable":false,
       "type":"function"
@@ -338,23 +413,15 @@
       "constant":false,
       "inputs":[
          {
-            "name":"_parcel_hash",
+            "name":"_owner",
             "type":"bytes32"
-         },
-         {
-            "name":"_new_owner",
-            "type":"address"
-         },
-         {
-            "name":"_action_id",
-            "type":"uint8"
          }
       ],
-      "name":"isPendingOwnerSigned",
+      "name":"getParcelByOwner",
       "outputs":[
          {
             "name":"",
-            "type":"bool"
+            "type":"bytes32"
          }
       ],
       "payable":false,
@@ -369,7 +436,7 @@
          },
          {
             "name":"_new_owner",
-            "type":"address"
+            "type":"bytes32"
          },
          {
             "name":"_action_id",
@@ -435,7 +502,7 @@
          {
             "indexed":false,
             "name":"_new_owner",
-            "type":"address"
+            "type":"bytes32"
          },
          {
             "indexed":true,
@@ -445,7 +512,7 @@
          {
             "indexed":false,
             "name":"owner",
-            "type":"address"
+            "type":"bytes32"
          },
          {
             "indexed":false,
@@ -492,7 +559,7 @@
          {
             "indexed":false,
             "name":"owner",
-            "type":"address"
+            "type":"bytes32"
          }
       ],
       "name":"createParcelExecuted",
