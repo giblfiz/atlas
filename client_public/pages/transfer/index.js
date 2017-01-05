@@ -43,6 +43,7 @@ class TransferPage extends Component {
       parcelHashActive: '',
       parcelActive: [],
       newOwnerHash: '0x0',
+      oldOwnerKey: '',
       newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
       upperLeftLng: 2000,
@@ -58,6 +59,7 @@ class TransferPage extends Component {
     this.handleChangeMyAddresses = this.handleChangeMyAddresses.bind(this);
     this.handleChangeParcelHash = this.handleChangeParcelHash.bind(this);
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
+    this.handleChangeOldOwnerKey = this.handleChangeOldOwnerKey.bind(this);
     this.handleChangeNewOwnerName = this.handleChangeNewOwnerName.bind(this);
     this.handleChangeUpperLeftLat = this.handleChangeUpperLeftLat.bind(this);
     this.handleChangeUpperLeftLng = this.handleChangeUpperLeftLng.bind(this);
@@ -179,12 +181,17 @@ class TransferPage extends Component {
     this.setState({ officerType: event.target.value });
   }
 
+  handleChangeOldOwnerKey(event){
+    this.setState({ oldOwnerKey: event.target.value });
+  }
+
 
   handleClickTransfer() {
     this.props.atlas.transferParcel.sendTransaction(
       this.state.parcelHashActive,
       this.state.newOwnerHash,
       this.state.newOwnerName,
+      this.state.oldOwnerKey,
       {
         from: this.state.myAddress,
         gas: 1000000,
@@ -221,6 +228,10 @@ class TransferPage extends Component {
         <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
+        <br/>
+        <span>Balance (Ether): {this.state.balance}</span><br />
+        <span>Officer Type: {this.state.officerType}</span>
+
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
@@ -231,6 +242,9 @@ class TransferPage extends Component {
         <Input type="text" label="New Owner Name"
           value={this.state.newOwnerName}
           handleValueChange={this.handleChangeNewOwnerName} />
+          <Input type="text" label="Old Owner Key"
+            value={this.state.oldOwnerKey}
+            handleValueChange={this.handleChangeOldOwnerKey} />(leave owner key blank for Notary/Admin actions)
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
@@ -246,13 +260,6 @@ class TransferPage extends Component {
           handleValueChange={this.handleChangeNewParcelName}/>
         <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
-        <h4>Dynamic Status Information</h4>
-        <span>Status: {this.state.status}</span><br />
-        <span>Balance (Ether): {this.state.balance}</span><br />
-        <span>Officer Type: {this.state.officerType}</span>
-        <p>
-          <br /><br />
-        </p>
       </Layout>
     );
   }
