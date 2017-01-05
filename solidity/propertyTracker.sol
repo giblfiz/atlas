@@ -19,13 +19,13 @@ struct Parcel{
     uint8 lr_lng;
     string owner_name;
     string street_address;
-    address owner;
+    bytes32 owner;
 }
 
 struct PendingAction{
     bytes32 parcel_hash;
     uint8 action_id;
-    address owner_signature;
+    bytes32 owner_hash;
     address notary_signature;
     address federal_signature;
     address judicial_signature;
@@ -48,20 +48,23 @@ function Atlas(address _judicial, address _notary){
     officer[_notary] = NOTARY;
 }
 
-function getPendingActionHash(bytes32 _parcel_hash, address _new_owner, uint8 _action_id) returns (bytes32){
+function getPendingActionHash(bytes32 _parcel_hash, bytes32 _new_owner, uint8 _action_id) returns (bytes32){
   return sha3(_parcel_hash,_new_owner,_action_id);
 }
 
-function signPending(bytes32 _parcel_hash, address _new_owner, uint8 _action_id){
+function key2Hash(bytes128 _key) returns (bytes32){
+  return sha3(key, "5044a80bd3eff58302e638018534bbda8896c48a") //salt
+}
+
+function signPending(bytes32 _parcel_hash, bytes32 _new_owner_hash, uint8 _action_id, bytes128 _owner_key){
     bytes32 pending_action_hash = getPendingActionHash(_parcel_hash,_new_owner,_action_id);
     if(pending_action_map[pending_action_hash].parcel_hash == ""){
         pending_action_map[pending_action_hash].action_id = _action_id;
         pending_action_map[pending_action_hash].parcel_hash = _parcel_hash;
     }
-    if(officer[msg.sender] == 0 ){
-        if(parcel_map[_parcel_hash].owner == msg.sender){
-            pending_action_map[pending_action_hash].owner_signature = msg.sender;
-        }
+    if(parcel_map[_parcel_hash].owner == key2Hash(_owner_key)){
+      pending_action_map[pending_action_hash].owner_hash = key2Hash(_owner_key);
+      debug_log(0x200);
     } else {
         if(officer[msg.sender] == NOTARY){
             pending_action_map[pending_action_hash].notary_signature = msg.sender;
@@ -77,7 +80,7 @@ function signPending(bytes32 _parcel_hash, address _new_owner, uint8 _action_id)
 
 function isPendingOwnerSigned(bytes32 _parcel_hash, address _new_owner, uint8 _action_id) returns (bool){
     bytes32 pending_action_hash = getPendingActionHash(_parcel_hash,_new_owner,_action_id);
-    if(pending_action_map[pending_action_hash].owner_signature != 0x0){
+    if(pending_action_map[pending_action_hash].owner_hash != 0x0){
         if(pending_action_map[pending_action_hash].notary_signature != 0x0){
             debug_log(0x1);
             return true;
@@ -106,7 +109,7 @@ event actionExecuted(bytes32 indexed _parcel_hash, address _new_owner, uint8 ind
 function pendingExecuted(bytes32 _parcel_hash, address _new_owner, uint8 _action_id){
     bytes32 pending_action_hash = getPendingActionHash(_parcel_hash,_new_owner,_action_id);
     actionExecuted(_parcel_hash, _new_owner, _action_id,
-    pending_action_map[pending_action_hash].owner_signature,
+    pending_action_map[pending_action_hash].owner_hash,
     pending_action_map[pending_action_hash].judicial_signature,
     pending_action_map[pending_action_hash].federal_signature,
     pending_action_map[pending_action_hash].notary_signature);
@@ -114,10 +117,10 @@ function pendingExecuted(bytes32 _parcel_hash, address _new_owner, uint8 _action
 }
 
 event createParcelExecuted(bytes32 indexed parcel_hash, address judicial,
-address federal, address notary, address owner);
+address federal, address notary, bytes32 owner);
 
 function createParcel(uint8 _ul_lat, uint8 _ul_lng, uint8 _lr_lat, uint8 _lr_lng
-, address _new_owner, string _street_address){
+, bytes32 _new_owner, string _street_address){
     //MAYBE check for collisions first?
     bytes32 parcel_hash = sha3(_ul_lat,_ul_lng,_lr_lat,_lr_lng);
     signPending(parcel_hash, _new_owner, CREATE_PARCEL);
