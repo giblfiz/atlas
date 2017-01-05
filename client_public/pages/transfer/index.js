@@ -53,6 +53,8 @@ class TransferPage extends Component {
       status: '',
       balance: '',
       officerType: 'Unset Yet',
+      hypoOwnerKey:"",
+      hypoOwnerHash:"",
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -66,6 +68,8 @@ class TransferPage extends Component {
     this.handleChangeLowerRightLat = this.handleChangeLowerRightLat.bind(this);
     this.handleChangeLowerRightLng = this.handleChangeLowerRightLng.bind(this);
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
+
+    this.handleChangeHypoOwnerKey = this.handleChangeHypoOwnerKey.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
     this.handleClickCreate = this.handleClickCreate.bind(this);
@@ -185,6 +189,12 @@ class TransferPage extends Component {
     this.setState({ oldOwnerKey: event.target.value });
   }
 
+  handleChangeHypoOwnerKey(event){
+    console.log("he")
+    this.setState({ hypoOwnerKey: event.target.value,
+                    hypoOwnerHash: this.props.atlas.key2Hash.call(event.target.value),
+                    });
+  }
 
   handleClickTransfer() {
     this.props.atlas.transferParcel.sendTransaction(
@@ -231,6 +241,7 @@ class TransferPage extends Component {
         <br/>
         <span>Balance (Ether): {this.state.balance}</span><br />
         <span>Officer Type: {this.state.officerType}</span>
+        <hr/>
 
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
@@ -247,6 +258,7 @@ class TransferPage extends Component {
             handleValueChange={this.handleChangeOldOwnerKey} />(leave owner key blank for Notary/Admin actions)
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
+
         <h4>Create a Parcel</h4>
         <Input label="Upper Left lat" value={this.state.upperLeftLat}
           handleValueChange={this.handleChangeUpperLeftLat}/>
@@ -260,6 +272,11 @@ class TransferPage extends Component {
           handleValueChange={this.handleChangeNewParcelName}/>
         <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
+
+        <h4>Ownership Key -> Hash</h4>
+        <Input label="Hypothetical Owner Key" value={this.state.hypoOwnerKey}
+          handleValueChange={this.handleChangeHypoOwnerKey}/>
+          <p>Resulting Owner Hash: {this.state.hypoOwnerHash}</p>
       </Layout>
     );
   }
