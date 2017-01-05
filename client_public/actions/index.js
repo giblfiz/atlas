@@ -14,15 +14,25 @@ export const getAtlas = updateManagerAddress => {
     updateManager: undefined,
     atlasAddress: undefined,
     atlas: undefined,
+    atlasAsync: undefined,
   };
+
+
 
   output.updateManagerAddress = updateManagerAddress || UPDATE_MANAGER_ADDRESS;
   output.updateManager = web3.eth.contract(UPDATE_MANAGER_ABI).at(UPDATE_MANAGER_ADDRESS);
-  output.atlasAddress = output.updateManager.current_version();
-  output.atlas = web3.eth.contract(ATLAS_ABI).at(output.atlasAddress);
+  return Promise.promisify(output.updateManager.current_version)()
+  .then(atlasAddress =>{
+      console.log("ataDr");
+      output.atlasAddress = atlasAddress;
+      return(3);
+      // return(Promise.promisifyAll(web3.eth.contract(ATLAS_ABI).at(atlasAddress)));
+  })
 
-  return {
-    type: GET_ATLAS,
-    payload: Promise.resolve(output),
-  };
+  // console.log(output)
+  //
+  // return {
+  //   type: GET_ATLAS,
+  //   payload: (output),
+  // };
 };

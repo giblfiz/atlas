@@ -21,7 +21,16 @@ import { title, html } from './index.md';
 
 
 import Web3 from 'web3';
-const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+// Checking if Web3 has been injected by the browser (Mist/MetaMask)
+if (typeof window.web3 !== 'undefined') {
+  // Use Mist/MetaMask's provider
+  var web3 = new Web3(window.web3.currentProvider);
+  console.log("Looks like we are probably using MetaMask")
+} else {
+  console.log('Using localhost RPC node... install Metamask and load page via HTTP to use metamask')
+  // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+  var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
 
 class TransferPage extends Component {
   static propTypes = {
@@ -29,6 +38,7 @@ class TransferPage extends Component {
     updateManagerAddress: PropTypes.string,
     updateManager: PropTypes.object,
     atlasAddress: PropTypes.string,
+    atlasAsync: PropTypes.object,
   }
 
   constructor(props) {
@@ -72,6 +82,8 @@ class TransferPage extends Component {
 
   componentWillMount() {
     this.props.dispatch(getAtlas());
+
+
   }
 
   componentDidMount() {
@@ -79,11 +91,13 @@ class TransferPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { updateManagerAddress, updateManager, atlasAddress, atlas } = nextProps;
+    const { updateManagerAddress, updateManager, atlasAddress, atlas, atlasAsync } = nextProps;
+    console.log("here", nextProps);
     if (updateManagerAddress !== undefined
         && updateManager !== undefined
         && atlasAddress !== undefined
-        && atlas !== undefined) {
+        && atlasAsync !== undefined) {
+      console.log("here");
       const parcelHash = [];
       for (let i = 0; i < 10; i++) {
         if (atlas.parcel_hash_list(i) !== '0x') {
