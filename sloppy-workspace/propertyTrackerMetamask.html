@@ -15,15 +15,12 @@ window.addEventListener('load', function() {
   console.log("step one")
 
   var Web3 = require('web3');
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
-    // Use Mist/MetaMask's provider
+  if (typeof web3 !== 'undefined') {   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     web3 = new Web3(web3.currentProvider);
     console.log("Looks like we are probably using MetaMask")
   } else {
-    console.log('Using localhost RPC node... install Metamask and load page via HTTP to use metamask')
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    console.log('Using localhost RPC node... install Metamask and load page via HTTP to use metamask')
   }
 
   console.log("document ready started")
@@ -41,7 +38,7 @@ function getCurrentContractAddressAsync(){
     }
 
     if(result == ROPSTEN){
-      update_manager_addr = "0xee80b2e89f7cc42e3b433107e989f71858070732"; //note different abi 
+      update_manager_addr = "0xee80b2e89f7cc42e3b433107e989f71858070732"; //note different abi
     }
     update_manager = Promise.promisifyAll(web3.eth.contract(update_manager_abi).at(update_manager_addr));
     return update_manager.current_versionAsync();
@@ -62,8 +59,8 @@ $("#contractAddress").change(()=>{atlas = null});
 
 
 function populateUserAddressOptions(){
+  $('#me').html("");
   web3.eth.accounts.forEach(function(addr){
-    $('#me').html("");
     $('#me').append($('<option>', {
       value: addr,
       text: addr
@@ -134,6 +131,7 @@ function send(){
       $("#parcel_hash").val(),
       $("#new_owner_addr").val(),
       $("#new_owner_name").val(),
+      $("#old_owner_private_key").val(),
       {
         from:$("#me").val(),
         gas:1000000
@@ -173,6 +171,16 @@ $("#create").click(function(){
           $("#street_address").val()
           );
 });
+
+$("#owner_secret_key").change(()=>{
+  getAtlasAsync()
+  .then( atlas=>{
+    return Promise.promisify(atlas.key2Hash.call)($("#owner_secret_key").val())
+  })
+  .then(owner_hash =>{
+    $("#owner_public_key").text(owner_hash);
+  })
+})
 
 $("#update").click(()=>{
   populateUserAddressOptions();
@@ -216,13 +224,12 @@ name = "Token Address" id ="contractAddress" /><label>Contract Address (You prob
 <label>Parcel Hash (dropdown UI only makes sense when there are few parcels)</label>
 <br/>
 
-<input type=string size = 46 value="0x53939de4ee95e908871644c47eff301857140bd7"
+<input type=string size = 46 value="0x000"
 name = "target address" id ="new_owner_addr" />
 <label>
-  New Owner Address (later should be a QR reader)
+  New Owner Public Key (later should be a QR reader)
 </label>
 <br/>
-
 
 <input type=string size = 46 value="Dr. SuchandSuch"
 name = "target name" id ="new_owner_name" />
@@ -230,6 +237,14 @@ name = "target name" id ="new_owner_name" />
   New Owner Name
 </label>
 <br/>
+
+<input type=string size = 46 value="0x000"
+name = "owner authentication" id ="old_owner_private_key" />
+<label>
+  Old Owner Private Key, leave blank for administrative (later should be a QR reader)
+</label>
+<br/>
+
 
 <input type = button value = "Send" id="send" />
 
@@ -247,19 +262,20 @@ LOWER RIGHT lat/lng:
 <br/>
 
 <input type=string  value="Somewhere Lovely!" name = "street_address" id ="street_address" />
-
 <input type= button value="create parcel" id ="create" />
 
 
 <hr/>
 <h2>Dynamic status Information</h2>
-<div>Status:<span id="status">...</span></div>
 <div>Balance[Ether]:<span id="balance">...</span></div>
 <div>Officer type?<span id="officer_type">...</span></div>
-
 <br/>
-<input type = button value = "UPDATE!" id="update""/>
+<input type = button value = "UPDATE!" id="update"/>
 
-<hr>
-<address></address>
+<hr/>
+<h2>Create Owner Public Key</h2>
+<input type=string  value="Secret" name = "owner_secret_key" id ="owner_secret_key" />
+<div>owner public key:<span id="owner_public_key">...</span></div>
+
+
 </body> </html>
