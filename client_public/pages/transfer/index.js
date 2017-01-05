@@ -11,7 +11,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import { connect } from 'react-redux';
-import { getAtlas } from '../../actions';
+// import { getAtlas } from '../../actions';
 
 import Layout from '../../components/Layout';
 import Input from '../../components/Input';
@@ -30,6 +30,21 @@ if (typeof window.web3 !== 'undefined') {
   console.log('Using localhost RPC node... install Metamask and load page via HTTP to use metamask')
   // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
   var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+
+function getAtlasAsync(){
+  const ROPSTEN = 3; //ropsten testnetwork version
+  const LIVE = 1; // live netowork version... not sure this is actually correct
+  return Promise.promisify(web3.version.getNetwork)().then(result => {
+    if(result == ROPSTEN){
+      update_manager_addr = "0x20deed01059bd6441717a1ffb42debff2eb8d037";
+    }
+    update_manager = Promise.promisifyAll(web3.eth.contract(update_manager_abi).at(update_manager_addr));
+    return update_manager.current_versionAsync();
+  }).then(atlasAddress => {
+    return(Promise.promisifyAll(web3.eth.contract(atlas_abi).at(atlasAddress)));
+  })
+
 }
 
 class TransferPage extends Component {
@@ -81,9 +96,7 @@ class TransferPage extends Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(getAtlas());
-
-
+    // this.props.dispatch(getAtlas());
   }
 
   componentDidMount() {
@@ -91,37 +104,41 @@ class TransferPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { updateManagerAddress, updateManager, atlasAddress, atlas, atlasAsync } = nextProps;
-    console.log("here", nextProps);
-    if (updateManagerAddress !== undefined
-        && updateManager !== undefined
-        && atlasAddress !== undefined
-        && atlasAsync !== undefined) {
-      console.log("here");
-      const parcelHash = [];
-      for (let i = 0; i < 10; i++) {
-        if (atlas.parcel_hash_list(i) !== '0x') {
-          parcelHash.push({
-            value: atlas.parcel_hash_list(i),
-            text: atlas.parcel_map(atlas.parcel_hash_list(i))[5],
-          });
-        }
-      }
-      this.setState({ parcelHash });
-
-      this.setState({
-        pacelhashActive:parcelHash[0].value,
-        parcelActive: atlas.parcel_map(parcelHash[0].value)
-      });
-
-      this.setState({
-        myAddresses: web3.eth.accounts,
-        myAddress:web3.eth.accounts[0],
-        balance: web3.fromWei(
-           web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
-           "ether"),
-        officerType:  this.getOfficerType(web3.eth.accounts[0], atlas)
-      });
+    console.log("here");
+    if (true || updateManagerAddress !== undefined
+        && updateManager !== undefined) {
+console.log("here 2")
+          var async_ittr = 0;
+          const parcelHash = [];
+          for(i=0;i<10;i++){
+            getAtlasAsync().then(atlas =>{
+                Promise.all([
+                  atlas.parcel_hash_listAsync(async_ittr),
+                  atlas.parcel_hash_listAsync(async_ittr).then(hash =>{
+                    return atlas.parcel_mapAsync(hash);
+                  })
+                ]).then(results =>{
+                  console.log(results);
+                  if(results[0] != "0x"){
+                    parcelHash.push({
+                      value: results[0],
+                      text: results[1][5]
+                    });
+                  }
+                })
+                async_ittr++;
+                this.setState({ parcelHash,
+                  pacelhashActive:parcelHash[0].value,
+                  parcelActive: atlas.parcel_map(parcelHash[0].value),
+                  myAddresses: web3.eth.accounts,
+                  myAddress:web3.eth.accounts[0],
+                  balance: web3.fromWei(
+                     web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
+                     "ether"),
+                  officerType:  this.getOfficerType(web3.eth.accounts[0], atlas)
+                });
+            })
+          }
     }
   }
 
