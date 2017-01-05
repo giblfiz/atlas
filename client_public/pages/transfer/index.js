@@ -34,7 +34,7 @@ class TransferPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
+      updateManagerAddress: '0xee80b2e89f7cc42e3b433107e989f71858070732',
       updateManager: {},
       atlasAddress: '',
       myAddresses: [],
