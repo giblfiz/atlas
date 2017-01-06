@@ -16,12 +16,13 @@ import { getAtlas } from '../../actions';
 import Layout from '../../components/Layout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import  '../../components/Qr';
 import s from './styles.css';
 import { title, html } from './index.md';
 
-
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+
 
 class TransferPage extends Component {
   static propTypes = {
@@ -190,7 +191,6 @@ class TransferPage extends Component {
   }
 
   handleChangeHypoOwnerKey(event){
-    console.log("he")
     this.setState({ hypoOwnerKey: event.target.value,
                     hypoOwnerHash: this.props.atlas.key2Hash.call(event.target.value),
                     });
@@ -233,6 +233,7 @@ class TransferPage extends Component {
   render() {
     return (
       <Layout className={s.content}>
+      <Qr/>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.props.atlasAddress} />
         <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
