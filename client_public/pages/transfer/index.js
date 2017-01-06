@@ -16,7 +16,7 @@ import { getAtlas } from '../../actions';
 import Layout from '../../components/Layout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import  '../../components/Qr';
+import Qr from  '../../components/Qr/Qr.js';
 import s from './styles.css';
 import { title, html } from './index.md';
 
