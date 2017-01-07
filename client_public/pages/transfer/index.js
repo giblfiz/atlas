@@ -74,21 +74,13 @@ class TransferPage extends Component {
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
     this.handleChangeOldOwnerKey = this.handleChangeOldOwnerKey.bind(this);
     this.handleChangeNewOwnerName = this.handleChangeNewOwnerName.bind(this);
-    this.handleChangeNorth = this.handleChangeNorth.bind(this);
-    this.handleChangeWest = this.handleChangeWest.bind(this);
-    this.handleChangeSouth = this.handleChangeSouth.bind(this);
-    this.handleChangeEast = this.handleChangeEast.bind(this);
-    this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
-
     this.handleClickScanOwnerQrCode = this.handleClickScanOwnerQrCode.bind(this);
     this.handleScanOwnerKey = this.handleScanOwnerKey.bind(this);
     this.handleChangeHypoOwnerKey = this.handleChangeHypoOwnerKey.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
-    this.handleClickCreate = this.handleClickCreate.bind(this);
 
     this.handleGoogleApiLoaded = this.handleGoogleApiLoaded.bind(this);
-    this.handleUpdateParcelRect = this.handleUpdateParcelRect.bind(this);
   }
 
   componentWillMount() {
@@ -183,10 +175,20 @@ class TransferPage extends Component {
   }
 
   handleChangeParcelHash(event) {
+    var parcel = this.props.atlas.parcel_map(event.target.value)
     this.setState({
       parcelHashActive: event.target.value,
-      parcelActive: this.props.atlas.parcel_map(event.target.value),
+      parcelActive: parcel,
+      north: (parseFloat(parcel[0])/100000),
+      west:  (parseFloat(parcel[1])/100000),
+      south: (parseFloat(parcel[2])/100000),
+      east:  (parseFloat(parcel[3])/100000),
     });
+    this.updateParcelRect((parseFloat(parcel[0])/100000),
+                                (parseFloat(parcel[1])/100000),
+                                (parseFloat(parcel[2])/100000),
+                                (parseFloat(parcel[3])/100000)
+                              )
   }
 
   handleChangeNewOwnerHash(event) {
@@ -195,26 +197,6 @@ class TransferPage extends Component {
 
   handleChangeNewOwnerName(event) {
     this.setState({ newOwnerName: event.target.value });
-  }
-
-  handleChangeNorth(event) {
-    this.setState({ north: Number(event.target.value) });
-  }
-
-  handleChangeWest(event) {
-    this.setState({ west: Number(event.target.value) });
-  }
-
-  handleChangeSouth(event) {
-    this.setState({ south: Number(event.target.value) });
-  }
-
-  handleChangeEast(event) {
-    this.setState({ east: Number(event.target.value) });
-  }
-
-  handleChangeNewParcelName(event) {
-    this.setState({ newParcelName: event.target.value });
   }
 
   handleChangeOfficerType(event) {
@@ -232,8 +214,9 @@ class TransferPage extends Component {
     });
   }
 
-  handleUpdateParcelRect() {
-    const { north, south, east, west, map, maps } = this.state;
+  updateParcelRect(north, west, south, east) {
+    console.log("moving rect", this.state.north, this.state.west);
+    const {map, maps } = this.state;
 
     if (this.state.removeRect) this.state.removeRect();
     const newParcelRect = new maps.Rectangle({
@@ -269,21 +252,6 @@ class TransferPage extends Component {
         from: this.state.myAddress,
         gas: 1000000,
       },
-    );
-  }
-
-  handleClickCreate() {
-    this.props.atlas.createParcel.sendTransaction(
-      Math.round(100000 * parseFloat(this.state.north)).toString(),
-      Math.round(100000 * parseFloat(this.state.west)).toString(),
-      Math.round(100000 * parseFloat(this.state.south)).toString(),
-      Math.round(100000 * parseFloat(this.state.east)).toString(),
-      '0x0',
-      this.state.newParcelName,
-      {
-        from: this.state.myAddress,
-        gas: 1000000,
-      }
     );
   }
 
@@ -353,37 +321,8 @@ class TransferPage extends Component {
           handleValueChange={this.handleChangeOldOwnerKey}
         />(leave owner key blank for Notary/Admin actions)
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
-        <hr />
 
-        <h4>Create a Parcel</h4>
-        <Input
-          label="North"
-          value={this.state.north}
-          handleValueChange={this.handleChangeNorth}
-        />
-        <Input
-          label="West"
-          value={this.state.west}
-          handleValueChange={this.handleChangeWest}
-        />
-        <Input
-          label="South"
-          value={this.state.south}
-          handleValueChange={this.handleChangeSouth}
-        />
-        <Input
-          label="East"
-          value={this.state.east}
-          handleValueChange={this.handleChangeEast}
-        />
-        <Input
-          label="New Parcel Name"
-          value={this.state.newParcelName}
-          handleValueChange={this.handleChangeNewParcelName}
-        />
-        <div>
-          <Button type="raised" onClick={this.handleUpdateParcelRect}>Update Parcel</Button>
-        </div>
+
         <div style={{ width: 400, height: 400 }}>
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
