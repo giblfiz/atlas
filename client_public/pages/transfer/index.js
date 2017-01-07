@@ -191,19 +191,19 @@ class TransferPage extends Component {
   }
 
   handleChangeNorth(event) {
-    this.setState({ north: event.target.value });
+    this.setState({ north: Number(event.target.value) });
   }
 
   handleChangeWest(event) {
-    this.setState({ west: event.target.value });
+    this.setState({ west: Number(event.target.value) });
   }
 
   handleChangeSouth(event) {
-    this.setState({ south: event.target.value });
+    this.setState({ south: Number(event.target.value) });
   }
 
   handleChangeEast(event) {
-    this.setState({ east: event.target.value });
+    this.setState({ east: Number(event.target.value) });
   }
 
   handleChangeNewParcelName(event) {
@@ -224,19 +224,17 @@ class TransferPage extends Component {
                     });
   }
 
-  handleUpdateParcelRect({ north, south, east, west } = {
-    north: this.state.north,
-    south: this.state.south,
-    east: this.state.east,
-    west: this.state.west,
-  }) {
-    const newParcelRect = new this.state.maps.Rectangle({
+  handleUpdateParcelRect() {
+    const { north, south, east, west, map, maps } = this.state;
+
+    if (this.state.removeRect) this.state.removeRect();
+    const newParcelRect = new maps.Rectangle({
       strokeColor: '#FF0000',
       strokeOpacity: 0.8,
       strokeWeight: 2,
       fillColor: '#FF0000',
       fillOpacity: 0.35,
-      map: this.state.map,
+      map,
       bounds: {
         north,
         south,
@@ -247,6 +245,9 @@ class TransferPage extends Component {
 
     this.setState({
       currentParcelRect: newParcelRect,
+      removeRect: () => {
+        newParcelRect.setMap(null);
+      },
     });
   }
 
