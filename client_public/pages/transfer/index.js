@@ -17,7 +17,7 @@ import Layout from '../../components/Layout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Qr from  '../../components/Qr/Qr.js';
-import QrReader from 'react-qr-reader'
+import QrReader from 'react-qr-reader';
 
 
 import s from './styles.css';
@@ -55,14 +55,9 @@ class TransferPage extends Component {
       status: '',
       balance: '',
       officerType: 'Unset Yet',
-      hypoOwnerKey:"",
-      hypoOwnerHash:"",
-      owner_qr_reader:"",
-      newOwnerName: '0x0',
-      newParcelName: 'Somewhere Lovely',
-      status: '',
-      balance: '',
-      officerType: '',
+      hypoOwnerKey: '',
+      hypoOwnerHash: '',
+      owner_qr_reader: '',
       map: undefined,
       maps: undefined,
       map_center: [33.678, -116.243],
@@ -138,7 +133,7 @@ class TransferPage extends Component {
   }
 
   getOfficerType = (account_address, atlas = null) => {
-    if(atlas == null){
+    if (atlas == null){
       var officer_type_number = this.props.atlas.officer(account_address);
     } else {
       var officer_type_number = atlas.officer(account_address);
@@ -146,11 +141,11 @@ class TransferPage extends Component {
     var ot = '';
     if (officer_type_number === 1) {
       ot = 'Notary';
-    } else if(officer_type_number === 2) {
+    } else if (officer_type_number === 2) {
       ot = 'Federal';
-    } else if(officer_type_number === 3) {
+    } else if (officer_type_number === 3) {
       ot = 'Judicial';
-    } else if(officer_type_number === 0) {
+    } else if (officer_type_number === 0) {
       ot = 'Not an officer';
     }
     return ot;
@@ -163,6 +158,18 @@ class TransferPage extends Component {
       return ' ';
     }
   }
+
+  getParcelBoundariesString(parcel) {
+    if (parcel[5]) {
+      return `North ${parcel[0]}, \n
+      West ${parcel[1]}, \n
+      South ${parcel[2]}, \n
+      East ${parcel[3]} \n`;
+    } else {
+      return ' ';
+    }
+  }
+
 
   handleChangeUpdateManagerAddress(event) {
     this.setState({ updateManagerAddress: event.target.value });
@@ -214,14 +221,15 @@ class TransferPage extends Component {
     this.setState({ officerType: event.target.value });
   }
 
-  handleChangeOldOwnerKey(event){
+  handleChangeOldOwnerKey(event) {
     this.setState({ oldOwnerKey: event.target.value });
   }
 
-  handleChangeHypoOwnerKey(event){
-    this.setState({ hypoOwnerKey: event.target.value,
-                    hypoOwnerHash: this.props.atlas.key2Hash.call(event.target.value),
-                    });
+  handleChangeHypoOwnerKey(event) {
+    this.setState({
+      hypoOwnerKey: event.target.value,
+      hypoOwnerHash: this.props.atlas.key2Hash.call(event.target.value),
+    });
   }
 
   handleUpdateParcelRect() {
@@ -317,8 +325,9 @@ class TransferPage extends Component {
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
-        </select>
-          <p>{this.getParcelOwnerString(this.state.parcelActive)}</p>
+        </select><br />
+          <span>{this.getParcelOwnerString(this.state.parcelActive)}</span><br />
+          <span>{this.getParcelBoundariesString(this.state.parcelActive)}</span><br />
         </label>
         <Input
           label="New Owner Hash"
