@@ -333,7 +333,6 @@ class TransferPage extends Component {
             onGoogleApiLoaded={this.handleGoogleApiLoaded}
           />
         </div>
-        <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
 
         <h4>Ownership Key -> Hash</h4>
