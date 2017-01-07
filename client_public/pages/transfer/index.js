@@ -16,12 +16,16 @@ import { getAtlas } from '../../actions';
 import Layout from '../../components/Layout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import Qr from  '../../components/Qr/Qr.js';
+import QrReader from 'react-qr-reader'
+
+
 import s from './styles.css';
 import { title, html } from './index.md';
 
-
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+
 
 class TransferPage extends Component {
   static propTypes = {
@@ -34,7 +38,7 @@ class TransferPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateManagerAddress: '0x20deed01059bd6441717a1ffb42debff2eb8d037',
+      updateManagerAddress: '0xee80b2e89f7cc42e3b433107e989f71858070732',
       updateManager: {},
       atlasAddress: '',
       myAddresses: [],
@@ -43,6 +47,7 @@ class TransferPage extends Component {
       parcelHashActive: '',
       parcelActive: [],
       newOwnerHash: '0x0',
+      oldOwnerKey: '',
       newOwnerName: 'Jhonny Appleseed',
       upperLeftLat: 1000,
       upperLeftLng: 2000,
@@ -52,12 +57,16 @@ class TransferPage extends Component {
       status: '',
       balance: '',
       officerType: 'Unset Yet',
+      hypoOwnerKey:"",
+      hypoOwnerHash:"",
+      owner_qr_reader:"",
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
     this.handleChangeMyAddresses = this.handleChangeMyAddresses.bind(this);
     this.handleChangeParcelHash = this.handleChangeParcelHash.bind(this);
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
+    this.handleChangeOldOwnerKey = this.handleChangeOldOwnerKey.bind(this);
     this.handleChangeNewOwnerName = this.handleChangeNewOwnerName.bind(this);
     this.handleChangeUpperLeftLat = this.handleChangeUpperLeftLat.bind(this);
     this.handleChangeUpperLeftLng = this.handleChangeUpperLeftLng.bind(this);
@@ -65,10 +74,20 @@ class TransferPage extends Component {
     this.handleChangeLowerRightLng = this.handleChangeLowerRightLng.bind(this);
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
 
+    this.handleClickScanOwnerQrCode = this.handleClickScanOwnerQrCode.bind(this);
+    this.handleChangeHypoOwnerKey = this.handleChangeHypoOwnerKey.bind(this);
+
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
     this.handleClickCreate = this.handleClickCreate.bind(this);
 
   }
+
+  handleScanOwnerKey(data){
+    this.setState({
+      oldOwnerKey: data,
+    })
+  }
+
 
   componentWillMount() {
     this.props.dispatch(getAtlas());
@@ -179,12 +198,22 @@ class TransferPage extends Component {
     this.setState({ officerType: event.target.value });
   }
 
+  handleChangeOldOwnerKey(event){
+    this.setState({ oldOwnerKey: event.target.value });
+  }
+
+  handleChangeHypoOwnerKey(event){
+    this.setState({ hypoOwnerKey: event.target.value,
+                    hypoOwnerHash: this.props.atlas.key2Hash.call(event.target.value),
+                    });
+  }
 
   handleClickTransfer() {
     this.props.atlas.transferParcel.sendTransaction(
       this.state.parcelHashActive,
       this.state.newOwnerHash,
       this.state.newOwnerName,
+      this.state.oldOwnerKey,
       {
         from: this.state.myAddress,
         gas: 1000000,
@@ -213,14 +242,31 @@ class TransferPage extends Component {
     } else { return " "}
   }
 
+  handleClickScanOwnerQrCode(){
+    this.setState({
+      owner_qr_reader:           <QrReader
+                  previewStyle={{height:72, width:96}}
+                  handleError={this.handleError}
+                  handleScan={this.handleScanOwnerKey.bind(this)}/>
+
+    })
+  }
+
   render() {
     return (
       <Layout className={s.content}>
+
+
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.props.atlasAddress} />
         <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
+        <br/>
+        <span>Balance (Ether): {this.state.balance}</span><br />
+        <span>Officer Type: {this.state.officerType}</span>
+        <hr/>
+
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
@@ -231,8 +277,15 @@ class TransferPage extends Component {
         <Input type="text" label="New Owner Name"
           value={this.state.newOwnerName}
           handleValueChange={this.handleChangeNewOwnerName} />
+
+          <Button type="raised" onClick={this.handleClickScanOwnerQrCode}>Scan Owner Secret Key</Button>
+          {this.state.owner_qr_reader}
+        <Input type="text" label="Old Owner Key"
+            value={this.state.oldOwnerKey}
+            handleValueChange={this.handleChangeOldOwnerKey} />(leave owner key blank for Notary/Admin actions)
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
+
         <h4>Create a Parcel</h4>
         <Input label="Upper Left lat" value={this.state.upperLeftLat}
           handleValueChange={this.handleChangeUpperLeftLat}/>
@@ -246,13 +299,11 @@ class TransferPage extends Component {
           handleValueChange={this.handleChangeNewParcelName}/>
         <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
-        <h4>Dynamic Status Information</h4>
-        <span>Status: {this.state.status}</span><br />
-        <span>Balance (Ether): {this.state.balance}</span><br />
-        <span>Officer Type: {this.state.officerType}</span>
-        <p>
-          <br /><br />
-        </p>
+
+        <h4>Ownership Key -> Hash</h4>
+        <Input label="Hypothetical Owner Key" value={this.state.hypoOwnerKey}
+          handleValueChange={this.handleChangeHypoOwnerKey}/>
+          <p>Resulting Owner Hash: {this.state.hypoOwnerHash}</p>
       </Layout>
     );
   }
