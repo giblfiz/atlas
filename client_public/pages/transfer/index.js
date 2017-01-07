@@ -99,7 +99,8 @@ class TransferPage extends Component {
         && atlas !== undefined) {
       const parcelHash = [];
       for (let i = 0; i < 10; i++) {
-        if (atlas.parcel_hash_list(i) !== '0x') {
+        if (atlas.parcel_hash_list(i) !== '0x' &&
+        atlas.parcel_map(atlas.parcel_hash_list(i))[5] != "" ) {
           parcelHash.push({
             value: atlas.parcel_hash_list(i),
             text: atlas.parcel_map(atlas.parcel_hash_list(i))[5],
@@ -107,11 +108,11 @@ class TransferPage extends Component {
         }
       }
       this.setState({ parcelHash });
-
       this.setState({
         pacelhashActive: parcelHash[0].value,
         parcelActive: atlas.parcel_map(parcelHash[0].value),
       });
+
 
       this.setState({
         myAddresses: web3.eth.accounts,
