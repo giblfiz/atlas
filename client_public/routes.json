@@ -17,6 +17,10 @@
     "page": "./pages/transfer"
   },
   {
+    "path": "/create",
+    "page": "./pages/create"
+  },
+  {
     "path": "/about",
     "page": "./pages/about"
   },
