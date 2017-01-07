@@ -44,16 +44,18 @@ class TransferPage extends Component {
       parcelHash: [],
       newOwnerHash: '0x0',
       newOwnerName: '0x0',
-      upperLeftLat: 1000,
-      upperLeftLng: 2000,
-      lowerRightLat: 5000,
-      lowerRightLng: 6000,
       newParcelName: 'Somewhere Lovely',
       status: '',
       balance: '',
       officerType: '',
+      map: undefined,
+      maps: undefined,
       map_center: [33.678, -116.243],
-      map_zoom: 9,
+      map_zoom: 12,
+      north: 33.385,
+      south: 33.671,
+      east: -116.234,
+      west: -116.251,
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -70,6 +72,7 @@ class TransferPage extends Component {
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
 
     this.handleGoogleApiLoaded = this.handleGoogleApiLoaded.bind(this);
+    this.handleUpdateParcelRect = this.handleUpdateParcelRect.bind(this);
   }
 
   componentWillMount() {
@@ -144,6 +147,32 @@ class TransferPage extends Component {
     this.setState({ newParcelName: event.target.value });
   }
 
+  handleUpdateParcelRect({ north, south, east, west } = {
+    north: this.state.north,
+    south: this.state.south,
+    east: this.state.east,
+    west: this.state.west,
+  }) {
+    const newParcelRect = new this.state.maps.Rectangle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: this.state.map,
+      bounds: {
+        north,
+        south,
+        east,
+        west,
+      },
+    });
+
+    this.setState({
+      currentParcelRect: newParcelRect,
+    });
+  }
+
   handleClickTransfer() {
     this.state.atlas.transferParcel.sendTransaction(
       this.state.parcelHash[0], //TODO modify selector component and state so retrieves current
@@ -157,20 +186,8 @@ class TransferPage extends Component {
   }
 
   handleGoogleApiLoaded({ map, maps }) {
-    console.log(map, maps);
-    new maps.Rectangle({
-      strokeColor: '#FF0000',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: '#FF0000',
-      fillOpacity: 0.35,
-      map,
-      bounds: {
-        north: 33.685,
-        south: 33.671,
-        east: -116.234,
-        west: -116.251,
-      },
+    this.setState({ map, maps }, () => {
+      this.handleUpdateParcelRect();
     });
   }
 
@@ -191,11 +208,12 @@ class TransferPage extends Component {
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
         <h4>Create a Parcel</h4>
-        <Input label="Upper Left lat" value={this.state.upperLeftLat} />
-        <Input label="Upper Left lng" value={this.state.upperLeftLng} />
-        <Input label="Lower Right lat" value={this.state.lowerRightLat} />
-        <Input label="Lower Right lng" value={this.state.lowerRightLng} />
+        <Input label="North" value={this.state.north} />
+        <Input label="West" value={this.state.west} />
+        <Input label="South" value={this.state.south} />
+        <Input label="East" value={this.state.east} />
         <Input label="New Parcel Name" value={this.state.newParcelName} />
+        <div><Button type="raised" onClick={this.handleUpdateParcelRect}>Update Parcel</Button></div>
         <div style={{ width: 400, height: 400 }}>
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'.split('').reverse().join('') }}
