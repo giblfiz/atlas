@@ -273,12 +273,6 @@ class TransferPage extends Component {
   }
 
   handleClickCreate() {
-    console.log(Math.round(100000 * parseFloat(this.state.north)),
-    Math.round(100000 * parseFloat(this.state.west)),
-    Math.round(100000 * parseFloat(this.state.south)),
-    Math.round(100000 * parseFloat(this.state.east)),)
-
-
     this.props.atlas.createParcel.sendTransaction(
       Math.round(100000 * parseFloat(this.state.north)).toString(),
       Math.round(100000 * parseFloat(this.state.west)).toString(),
