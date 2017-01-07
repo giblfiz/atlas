@@ -21,6 +21,8 @@ export const getAtlas = updateManagerAddress => {
   output.atlasAddress = output.updateManager.current_version();
   output.atlas = web3.eth.contract(ATLAS_ABI).at(output.atlasAddress);
 
+  console.log(output);
+
   return {
     type: GET_ATLAS,
     payload: Promise.resolve(output),

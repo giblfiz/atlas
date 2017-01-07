@@ -62,7 +62,7 @@ class TransferPage extends Component {
       maps: undefined,
       map_center: [33.678, -116.243],
       map_zoom: 12,
-      north: 33.385,
+      north: 33.685,
       south: 33.671,
       east: -116.234,
       west: -116.251,
@@ -139,13 +139,13 @@ class TransferPage extends Component {
       var officer_type_number = atlas.officer(account_address);
     }
     var ot = '';
-    if (officer_type_number === 1) {
+    if (officer_type_number == 1) {
       ot = 'Notary';
-    } else if (officer_type_number === 2) {
+    } else if (officer_type_number == 2) {
       ot = 'Federal';
-    } else if (officer_type_number === 3) {
+    } else if (officer_type_number == 3) {
       ot = 'Judicial';
-    } else if (officer_type_number === 0) {
+    } else if (officer_type_number == 0) {
       ot = 'Not an officer';
     }
     return ot;
@@ -273,11 +273,17 @@ class TransferPage extends Component {
   }
 
   handleClickCreate() {
+    console.log(Math.round(100000 * parseFloat(this.state.north)),
+    Math.round(100000 * parseFloat(this.state.west)),
+    Math.round(100000 * parseFloat(this.state.south)),
+    Math.round(100000 * parseFloat(this.state.east)),)
+
+
     this.props.atlas.createParcel.sendTransaction(
-      this.state.upperLeftLat,
-      this.state.West,
-      this.state.South,
-      this.state.East,
+      Math.round(100000 * parseFloat(this.state.north)).toString(),
+      Math.round(100000 * parseFloat(this.state.west)).toString(),
+      Math.round(100000 * parseFloat(this.state.south)).toString(),
+      Math.round(100000 * parseFloat(this.state.east)).toString(),
       '0x0',
       this.state.newParcelName,
       {
@@ -390,7 +396,7 @@ class TransferPage extends Component {
               .split('').reverse().join('') }}
             center={this.state.map_center}
             zoom={this.state.map_zoom}
-            draggable={false}
+            draggable={true}
             onGoogleApiLoaded={this.handleGoogleApiLoaded}
           />
         </div>

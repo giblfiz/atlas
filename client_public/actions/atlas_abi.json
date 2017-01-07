@@ -90,6 +90,41 @@
       "constant":false,
       "inputs":[
          {
+            "name":"_ul_lat",
+            "type":"int256"
+         },
+         {
+            "name":"_ul_lng",
+            "type":"int256"
+         },
+         {
+            "name":"_lr_lat",
+            "type":"int256"
+         },
+         {
+            "name":"_lr_lng",
+            "type":"int256"
+         },
+         {
+            "name":"_new_owner",
+            "type":"bytes32"
+         },
+         {
+            "name":"_street_address",
+            "type":"string"
+         }
+      ],
+      "name":"createParcel",
+      "outputs":[
+
+      ],
+      "payable":false,
+      "type":"function"
+   },
+   {
+      "constant":false,
+      "inputs":[
+         {
             "name":"_target_officer",
             "type":"address"
          },
@@ -117,19 +152,19 @@
       "outputs":[
          {
             "name":"ul_lat",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "name":"ul_lng",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "name":"lr_lat",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "name":"lr_lng",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "name":"owner_name",
@@ -187,41 +222,6 @@
             "name":"",
             "type":"bytes32"
          }
-      ],
-      "payable":false,
-      "type":"function"
-   },
-   {
-      "constant":false,
-      "inputs":[
-         {
-            "name":"_ul_lat",
-            "type":"uint8"
-         },
-         {
-            "name":"_ul_lng",
-            "type":"uint8"
-         },
-         {
-            "name":"_lr_lat",
-            "type":"uint8"
-         },
-         {
-            "name":"_lr_lng",
-            "type":"uint8"
-         },
-         {
-            "name":"_new_owner",
-            "type":"bytes32"
-         },
-         {
-            "name":"_street_address",
-            "type":"string"
-         }
-      ],
-      "name":"createParcel",
-      "outputs":[
-
       ],
       "payable":false,
       "type":"function"
@@ -576,22 +576,22 @@
          {
             "indexed":false,
             "name":"_ul_lat",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "indexed":false,
             "name":"_ul_lng",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "indexed":false,
             "name":"_lr_lat",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "indexed":false,
             "name":"_lr_lng",
-            "type":"uint8"
+            "type":"int256"
          },
          {
             "indexed":false,

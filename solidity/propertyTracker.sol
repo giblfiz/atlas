@@ -13,10 +13,10 @@ uint8 constant REMOVE_OFFICER  = 21; //0x15
 
 
 struct Parcel{
-    uint8 ul_lat;
-    uint8 ul_lng;
-    uint8 lr_lat;
-    uint8 lr_lng;
+    int256 ul_lat;
+    int256 ul_lng;
+    int256 lr_lat;
+    int256 lr_lng;
     string owner_name;
     string street_address;
     bytes32 owner;
@@ -152,7 +152,7 @@ function pendingExecuted(bytes32 _parcel_hash, bytes32 _new_owner, uint8 _action
 event createParcelExecuted(bytes32 indexed parcel_hash, address judicial,
 address federal, address notary, bytes32 owner);
 
-function createParcel(uint8 _ul_lat, uint8 _ul_lng, uint8 _lr_lat, uint8 _lr_lng
+function createParcel(int256 _ul_lat, int256 _ul_lng, int256 _lr_lat, int256 _lr_lng
 , bytes32 _new_owner, string _street_address){
     //MAYBE check for collisions first?
     bytes32 parcel_hash = sha3(_ul_lat,_ul_lng,_lr_lat,_lr_lng);
@@ -169,8 +169,8 @@ function createParcel(uint8 _ul_lat, uint8 _ul_lng, uint8 _lr_lat, uint8 _lr_lng
     }
 }
 
-event dissolvedParcel(bytes32 indexed _parcel_hash, uint8 _ul_lat, uint8 _ul_lng,
-                      uint8 _lr_lat, uint8 _lr_lng, string street_address);
+event dissolvedParcel(bytes32 indexed _parcel_hash, int256 _ul_lat, int256 _ul_lng,
+                      int256 _lr_lat, int256 _lr_lng, string street_address);
 
 function dissolveParcel(bytes32 _parcel_hash){
     signPending(_parcel_hash, 0x0, DISSOLVE_PARCEL,"");
