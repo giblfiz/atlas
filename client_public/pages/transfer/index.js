@@ -23,6 +23,8 @@ import QrReader from 'react-qr-reader'
 import s from './styles.css';
 import { title, html } from './index.md';
 
+import GoogleMap from 'google-map-react';
+
 import Web3 from 'web3';
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
@@ -49,10 +51,6 @@ class TransferPage extends Component {
       newOwnerHash: '0x0',
       oldOwnerKey: '',
       newOwnerName: 'Jhonny Appleseed',
-      upperLeftLat: 1000,
-      upperLeftLng: 2000,
-      lowerRightLat: 5000,
-      lowerRightLng: 6000,
       newParcelName: 'Somewhere Lovely',
       status: '',
       balance: '',
@@ -60,6 +58,19 @@ class TransferPage extends Component {
       hypoOwnerKey:"",
       hypoOwnerHash:"",
       owner_qr_reader:"",
+      newOwnerName: '0x0',
+      newParcelName: 'Somewhere Lovely',
+      status: '',
+      balance: '',
+      officerType: '',
+      map: undefined,
+      maps: undefined,
+      map_center: [33.678, -116.243],
+      map_zoom: 12,
+      north: 33.385,
+      south: 33.671,
+      east: -116.234,
+      west: -116.251,
     };
 
     this.handleChangeUpdateManagerAddress = this.handleChangeUpdateManagerAddress.bind(this);
@@ -68,26 +79,22 @@ class TransferPage extends Component {
     this.handleChangeNewOwnerHash = this.handleChangeNewOwnerHash.bind(this);
     this.handleChangeOldOwnerKey = this.handleChangeOldOwnerKey.bind(this);
     this.handleChangeNewOwnerName = this.handleChangeNewOwnerName.bind(this);
-    this.handleChangeUpperLeftLat = this.handleChangeUpperLeftLat.bind(this);
-    this.handleChangeUpperLeftLng = this.handleChangeUpperLeftLng.bind(this);
-    this.handleChangeLowerRightLat = this.handleChangeLowerRightLat.bind(this);
-    this.handleChangeLowerRightLng = this.handleChangeLowerRightLng.bind(this);
+    this.handleChangeNorth = this.handleChangeNorth.bind(this);
+    this.handleChangeWest = this.handleChangeWest.bind(this);
+    this.handleChangeSouth = this.handleChangeSouth.bind(this);
+    this.handleChangeEast = this.handleChangeEast.bind(this);
     this.handleChangeNewParcelName = this.handleChangeNewParcelName.bind(this);
 
     this.handleClickScanOwnerQrCode = this.handleClickScanOwnerQrCode.bind(this);
+    this.handleScanOwnerKey = this.handleScanOwnerKey.bind(this);
     this.handleChangeHypoOwnerKey = this.handleChangeHypoOwnerKey.bind(this);
 
     this.handleClickTransfer = this.handleClickTransfer.bind(this);
     this.handleClickCreate = this.handleClickCreate.bind(this);
 
+    this.handleGoogleApiLoaded = this.handleGoogleApiLoaded.bind(this);
+    this.handleUpdateParcelRect = this.handleUpdateParcelRect.bind(this);
   }
-
-  handleScanOwnerKey(data){
-    this.setState({
-      oldOwnerKey: data,
-    })
-  }
-
 
   componentWillMount() {
     this.props.dispatch(getAtlas());
@@ -115,18 +122,45 @@ class TransferPage extends Component {
       this.setState({ parcelHash });
 
       this.setState({
-        pacelhashActive:parcelHash[0].value,
-        parcelActive: atlas.parcel_map(parcelHash[0].value)
+        pacelhashActive: parcelHash[0].value,
+        parcelActive: atlas.parcel_map(parcelHash[0].value),
       });
 
       this.setState({
         myAddresses: web3.eth.accounts,
-        myAddress:web3.eth.accounts[0],
+        myAddress: web3.eth.accounts[0],
         balance: web3.fromWei(
            web3.eth.getBalance(web3.eth.accounts[0]).toNumber(),
-           "ether"),
-        officerType:  this.getOfficerType(web3.eth.accounts[0], atlas)
+           'ether'),
+        officerType: this.getOfficerType(web3.eth.accounts[0], atlas),
       });
+    }
+  }
+
+  getOfficerType = (account_address, atlas = null) => {
+    if(atlas == null){
+      var officer_type_number = this.props.atlas.officer(account_address);
+    } else {
+      var officer_type_number = atlas.officer(account_address);
+    }
+    var ot = '';
+    if (officer_type_number === 1) {
+      ot = 'Notary';
+    } else if(officer_type_number === 2) {
+      ot = 'Federal';
+    } else if(officer_type_number === 3) {
+      ot = 'Judicial';
+    } else if(officer_type_number === 0) {
+      ot = 'Not an officer';
+    }
+    return ot;
+  };
+
+  getParcelOwnerString(parcel) {
+    if (parcel[5]) {
+      return `${parcel[5]} owner is ${parcel[4]} addr: ${parcel[6]}`;
+    } else {
+      return ' ';
     }
   }
 
@@ -134,36 +168,18 @@ class TransferPage extends Component {
     this.setState({ updateManagerAddress: event.target.value });
   }
 
-  getOfficerType = (account_address, atlas = null) => {
-        if(atlas == null){
-          var officer_type_number = this.props.atlas.officer(account_address);
-        } else {
-          var officer_type_number = atlas.officer(account_address);
-        }
-        var ot="";
-        if(officer_type_number == 1){
-          ot = "Notary";
-        } else if(officer_type_number == 2){
-          ot = "Federal";
-        } else if(officer_type_number == 3){
-          ot = "Judicial";
-        } else if(officer_type_number == 0){
-            ot = "Not an officer";
-        }
-        return ot;
-  };
-
   handleChangeMyAddresses(event) {
-    this.setState({myAddress: event.target.value,
-                   balance: web3.fromWei(
-                      web3.eth.getBalance(event.target.value).toNumber(),
-                      "ether"),
-                   officerType:  this.getOfficerType(event.target.value)});
+    this.setState({ myAddress: event.target.value,
+      balance: web3.fromWei(web3.eth.getBalance(event.target.value).toNumber(), 'ether'),
+      officerType: this.getOfficerType(event.target.value),
+    });
   }
 
   handleChangeParcelHash(event) {
-    this.setState({ parcelHashActive: event.target.value,
-                    parcelActive: this.props.atlas.parcel_map(event.target.value)});
+    this.setState({
+      parcelHashActive: event.target.value,
+      parcelActive: this.props.atlas.parcel_map(event.target.value),
+    });
   }
 
   handleChangeNewOwnerHash(event) {
@@ -174,20 +190,20 @@ class TransferPage extends Component {
     this.setState({ newOwnerName: event.target.value });
   }
 
-  handleChangeUpperLeftLat(event) {
-    this.setState({ upperLeftLat: event.target.value });
+  handleChangeNorth(event) {
+    this.setState({ north: event.target.value });
   }
 
-  handleChangeUpperLeftLng(event) {
-    this.setState({ upperLeftLng: event.target.value });
+  handleChangeWest(event) {
+    this.setState({ west: event.target.value });
   }
 
-  handleChangeLowerRightLat(event) {
-    this.setState({ lowerRightLat: event.target.value });
+  handleChangeSouth(event) {
+    this.setState({ south: event.target.value });
   }
 
-  handleChangeLowerRightLng(event) {
-    this.setState({ lowerRightLng: event.target.value });
+  handleChangeEast(event) {
+    this.setState({ east: event.target.value });
   }
 
   handleChangeNewParcelName(event) {
@@ -208,6 +224,32 @@ class TransferPage extends Component {
                     });
   }
 
+  handleUpdateParcelRect({ north, south, east, west } = {
+    north: this.state.north,
+    south: this.state.south,
+    east: this.state.east,
+    west: this.state.west,
+  }) {
+    const newParcelRect = new this.state.maps.Rectangle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: this.state.map,
+      bounds: {
+        north,
+        south,
+        east,
+        west,
+      },
+    });
+
+    this.setState({
+      currentParcelRect: newParcelRect,
+    });
+  }
+
   handleClickTransfer() {
     this.props.atlas.transferParcel.sendTransaction(
       this.state.parcelHashActive,
@@ -221,89 +263,137 @@ class TransferPage extends Component {
     );
   }
 
-  handleClickCreate(){
+  handleClickCreate() {
     this.props.atlas.createParcel.sendTransaction(
       this.state.upperLeftLat,
-      this.state.upperLeftLng,
-      this.state.lowerRightLat,
-      this.state.lowerRightLng,
-      "0x0",
+      this.state.West,
+      this.state.South,
+      this.state.East,
+      '0x0',
       this.state.newParcelName,
       {
         from: this.state.myAddress,
-        gas:1000000
+        gas: 1000000,
       }
-    )
+    );
   }
 
-  getParcelOwnerString(parcel){
-    if(parcel[5]){
-      return parcel[5] + " owner is ''" + parcel[4] + "'' addr:" + parcel[6];
-    } else { return " "}
-  }
-
-  handleClickScanOwnerQrCode(){
+  handleScanOwnerKey(data) {
     this.setState({
-      owner_qr_reader:           <QrReader
-                  previewStyle={{height:72, width:96}}
-                  handleError={this.handleError}
-                  handleScan={this.handleScanOwnerKey.bind(this)}/>
+      oldOwnerKey: data,
+    });
+  }
 
-    })
+  handleClickScanOwnerQrCode() {
+    this.setState({
+      owner_qr_reader: <QrReader
+        previewStyle={{ height: 72, width: 96 }}
+        handleError={this.handleError}
+        handleScan={this.handleScanOwnerKey}
+      />,
+    });
+  }
+
+  handleGoogleApiLoaded({ map, maps }) {
+    this.setState({ map, maps }, () => {
+      this.handleUpdateParcelRect();
+    });
   }
 
   render() {
     return (
       <Layout className={s.content}>
-
-
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <Input label="Atlas Address" value={this.props.atlasAddress} />
         <label>My Address: <select label="My Addressess" onChange={this.handleChangeMyAddresses}>
           {this.state.myAddresses.map(address => (<option value={address}>{address}</option>))}
         </select></label>
-        <br/>
+        <br />
         <span>Balance (Ether): {this.state.balance}</span><br />
         <span>Officer Type: {this.state.officerType}</span>
-        <hr/>
+        <hr />
 
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
         </select>
-        <p>{this.getParcelOwnerString(this.state.parcelActive)}</p></label>
-        <Input label="New Owner Hash" value={this.state.newOwnerHash}
-        handleValueChange={this.handleChangeNewOwnerHash} />
-        <Input type="text" label="New Owner Name"
+          <p>{this.getParcelOwnerString(this.state.parcelActive)}</p>
+        </label>
+        <Input
+          label="New Owner Hash"
+          value={this.state.newOwnerHash}
+          handleValueChange={this.handleChangeNewOwnerHash}
+        />
+        <Input
+          type="text"
+          label="New Owner Name"
           value={this.state.newOwnerName}
-          handleValueChange={this.handleChangeNewOwnerName} />
-
-          <Button type="raised" onClick={this.handleClickScanOwnerQrCode}>Scan Owner Secret Key</Button>
+          handleValueChange={this.handleChangeNewOwnerName}
+        />
+        <Button
+          type="raised"
+          onClick={this.handleClickScanOwnerQrCode}
+        >Scan Owner Secret Key
+        </Button>
           {this.state.owner_qr_reader}
-        <Input type="text" label="Old Owner Key"
-            value={this.state.oldOwnerKey}
-            handleValueChange={this.handleChangeOldOwnerKey} />(leave owner key blank for Notary/Admin actions)
+        <Input
+          type="text"
+          label="Old Owner Key"
+          value={this.state.oldOwnerKey}
+          handleValueChange={this.handleChangeOldOwnerKey}
+        />(leave owner key blank for Notary/Admin actions)
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
         <hr />
 
         <h4>Create a Parcel</h4>
-        <Input label="Upper Left lat" value={this.state.upperLeftLat}
-          handleValueChange={this.handleChangeUpperLeftLat}/>
-        <Input label="Upper Left lng" value={this.state.upperLeftLng}
-          handleValueChange={this.handleChangeUpperLeftLng}/>
-        <Input label="Lower Right lat" value={this.state.lowerRightLat}
-          handleValueChange={this.handleChangeLowerRightLat}/>
-        <Input label="Lower Right lng" value={this.state.lowerRightLng}
-          handleValueChange={this.handleChangeLowerRightLng}/>
-        <Input label="New Parcel Name" value={this.state.newParcelName}
-          handleValueChange={this.handleChangeNewParcelName}/>
+        <Input
+          label="North"
+          value={this.state.north}
+          handleValueChange={this.handleChangeNorth}
+        />
+        <Input
+          label="West"
+          value={this.state.west}
+          handleValueChange={this.handleChangeWest}
+        />
+        <Input
+          label="South"
+          value={this.state.south}
+          handleValueChange={this.handleChangeSouth}
+        />
+        <Input
+          label="East"
+          value={this.state.east}
+          handleValueChange={this.handleChangeEast}
+        />
+        <Input
+          label="New Parcel Name"
+          value={this.state.newParcelName}
+          handleValueChange={this.handleChangeNewParcelName}
+        />
+        <div>
+          <Button type="raised" onClick={this.handleUpdateParcelRect}>Update Parcel</Button>
+        </div>
+        <div style={{ width: 400, height: 400 }}>
+          <GoogleMap
+            bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
+              .split('').reverse().join('') }}
+            center={this.state.map_center}
+            zoom={this.state.map_zoom}
+            draggable={false}
+            onGoogleApiLoaded={this.handleGoogleApiLoaded}
+          />
+        </div>
         <div><Button type="raised" onClick={this.handleClickCreate}>Create</Button></div>
         <hr />
 
         <h4>Ownership Key -> Hash</h4>
-        <Input label="Hypothetical Owner Key" value={this.state.hypoOwnerKey}
-          handleValueChange={this.handleChangeHypoOwnerKey}/>
-          <p>Resulting Owner Hash: {this.state.hypoOwnerHash}</p>
+        <Input
+          label="Hypothetical Owner Key"
+          value={this.state.hypoOwnerKey}
+          handleValueChange={this.handleChangeHypoOwnerKey}
+        />
+        <p>Resulting Owner Hash: {this.state.hypoOwnerHash}</p>
       </Layout>
     );
   }
