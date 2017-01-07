@@ -164,6 +164,18 @@ class TransferPage extends Component {
     }
   }
 
+  getParcelBoundariesString(parcel) {
+    if (parcel[5]) {
+      return `North ${parcel[0]}, \n
+      West ${parcel[1]}, \n
+      South ${parcel[2]}, \n
+      East ${parcel[3]} \n`
+    } else {
+      return ' ';
+    }
+  }
+
+
   handleChangeUpdateManagerAddress(event) {
     this.setState({ updateManagerAddress: event.target.value });
   }
@@ -191,19 +203,19 @@ class TransferPage extends Component {
   }
 
   handleChangeNorth(event) {
-    this.setState({ north: event.target.value });
+    this.setState({ upperLeftLat: event.target.value });
   }
 
   handleChangeWest(event) {
-    this.setState({ west: event.target.value });
+    this.setState({ West: event.target.value });
   }
 
   handleChangeSouth(event) {
-    this.setState({ south: event.target.value });
+    this.setState({ South: event.target.value });
   }
 
   handleChangeEast(event) {
-    this.setState({ east: event.target.value });
+    this.setState({ East: event.target.value });
   }
 
   handleChangeNewParcelName(event) {
@@ -316,8 +328,9 @@ class TransferPage extends Component {
         <h4>Transfer a Parcel</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
-        </select>
-          <p>{this.getParcelOwnerString(this.state.parcelActive)}</p>
+        </select><br/>
+          <span>{this.getParcelOwnerString(this.state.parcelActive)}</span><br/>
+          <span>{this.getParcelBoundariesString(this.state.parcelActive)}</span><br/>
         </label>
         <Input
           label="New Owner Hash"
