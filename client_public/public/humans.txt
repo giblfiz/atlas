@@ -3,14 +3,16 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    Harry Pottash -- Lead Engineer -- https://twitter.com/giblfiz
+    Jared Scheib -- Frontend Engineer -- https://twitter.com/jaredscheib
 
 # THANKS
 
-    <name>
+    UAE Blockchain Virtual GovHack
 
 # TECHNOLOGY COLOPHON
 
+    Solidity, Ethereum Blockchain, Metamask, Web3
     JavaScript, HTML5, CSS3
     React, Redux, Material Design Lite (MDL)
     Babel, Webpack, Node.js

@@ -235,9 +235,14 @@ class TransferPage extends Component {
           handleValueChange={this.handleChangeNewParcelName}
         />
         <div>
-          <Button type="raised" onClick={this.handleUpdateParcelRect}>Update Parcel</Button>
+          <Button
+            type="raised"
+            onClick={this.handleUpdateParcelRect}
+            className="button"
+          >Update Parcel
+          </Button>
         </div>
-        <div style={{ width: 400, height: 400}}>
+        <div className={s.map}>
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
               .split('').reverse().join('') }}

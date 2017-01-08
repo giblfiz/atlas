@@ -10,6 +10,7 @@
 
 .row {
   padding: 40px;
+  background-color: #a13139;
 }
 
 .title {
@@ -25,6 +26,7 @@
 
   .row {
     padding: 0 16px;
+    background-color: #a13139;
   }
 
 }

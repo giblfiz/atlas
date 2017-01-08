@@ -11,6 +11,7 @@
 import React, { PropTypes } from 'react';
 import cx from 'classnames';
 import Link from '../Link';
+import s from './Button.css';
 
 class Button extends React.Component {
 
@@ -48,7 +49,7 @@ class Button extends React.Component {
         ref: node => (this.root = node),
         className: cx(
           'mdl-button mdl-js-button',
-          type && `mdl-button--${type}`,
+          type && `mdl-button--${type} ${s.button}`,
           {
             'mdl-button--colored': colored,
             'mdl-button--primary': primary,

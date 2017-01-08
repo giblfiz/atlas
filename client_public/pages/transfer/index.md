@@ -1,7 +1,7 @@
 ---
-title: Property Transfer by Owner
+title: Ethereum Atlas – Transfer a Parcel
 ---
 
 ## Transfer a Parcel
 
-This is a site for owners to transfer property on the Ethereum blockchain.
+Select your address and fill in the form below to transfer a parcel.

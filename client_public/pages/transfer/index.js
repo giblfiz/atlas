@@ -216,8 +216,8 @@ class TransferPage extends Component {
   }
 
   updateParcelRect(north, west, south, east) {
-    console.log("moving rect", this.state.north, this.state.west);
-    const {map, maps } = this.state;
+    console.log('moving rect', this.state.north, this.state.west);
+    const { map, maps } = this.state;
 
     if (this.state.removeRect) this.state.removeRect();
     const newParcelRect = new maps.Rectangle({
@@ -312,6 +312,7 @@ class TransferPage extends Component {
         <Button
           type="raised"
           onClick={this.handleClickScanOwnerQrCode}
+          className="button"
         >Scan Owner Secret Key
         </Button>
           {this.state.owner_qr_reader}
@@ -321,10 +322,15 @@ class TransferPage extends Component {
           value={this.state.oldOwnerKey}
           handleValueChange={this.handleChangeOldOwnerKey}
         />(leave owner key blank for Notary/Admin actions)
-        <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
-
-
-        <div style={{ width: 400, height: 400 }}>
+        <div>
+          <Button
+            type="raised"
+            onClick={this.handleClickTransfer}
+            className="button"
+          >Transfer
+          </Button>
+        </div>
+        <div className="map">
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
               .split('').reverse().join('') }}
