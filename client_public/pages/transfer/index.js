@@ -177,20 +177,17 @@ class TransferPage extends Component {
   }
 
   handleChangeParcelHash(event) {
-    var parcel = this.props.atlas.parcel_map(event.target.value)
+    const parcel = this.props.atlas.parcel_map(event.target.value);
     this.setState({
       parcelHashActive: event.target.value,
       parcelActive: parcel,
-      north: (parseFloat(parcel[0])/100000),
-      west:  (parseFloat(parcel[1])/100000),
-      south: (parseFloat(parcel[2])/100000),
-      east:  (parseFloat(parcel[3])/100000),
+      north: (parseFloat(parcel[0]) / 100000),
+      west: (parseFloat(parcel[1]) / 100000),
+      south: (parseFloat(parcel[2]) / 100000),
+      east: (parseFloat(parcel[3]) / 100000),
+    }, () => {
+      this.updateParcelRect();
     });
-    this.updateParcelRect((parseFloat(parcel[0])/100000),
-                                (parseFloat(parcel[1])/100000),
-                                (parseFloat(parcel[2])/100000),
-                                (parseFloat(parcel[3])/100000)
-                              )
   }
 
   handleChangeNewOwnerHash(event) {
@@ -216,9 +213,8 @@ class TransferPage extends Component {
     });
   }
 
-  updateParcelRect(north, west, south, east) {
-    console.log("moving rect", this.state.north, this.state.west);
-    const {map, maps } = this.state;
+  updateParcelRect() {
+    const { north, west, south, east, map, maps } = this.state;
 
     if (this.state.removeRect) this.state.removeRect();
     const newParcelRect = new maps.Rectangle({
@@ -275,7 +271,7 @@ class TransferPage extends Component {
 
   handleGoogleApiLoaded({ map, maps }) {
     this.setState({ map, maps }, () => {
-      this.handleUpdateParcelRect();
+      this.updateParcelRect();
     });
   }
 
