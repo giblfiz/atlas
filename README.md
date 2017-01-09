@@ -17,10 +17,12 @@ You can use it in two ways:
 
 
 
-  ##How to transfer a parcel
+  <h3>How to transfer a parcel</h3>
   For any parcel transfer to complete it needs EITHER:
   A) The transfer to be completed by a Notary and by any account with the secret key for the parcel
   B) The transfer to be completed by a Notary account, a federal account and a Judicial account  
 
   You can watch the demo video to see how this can be done:
   <a href = https://youtu.be/QMGu2OAwr00 > Transfer a Parcel </a>
+  <a href = https://youtu.be/uorqY75FvMk > Transfer a Parcel with a QR code key </a>
+  <a href = https://youtu.be/5Ytheo-WL5I > Creating a Parcel </a>
