@@ -1,8 +1,7 @@
 # Welcome to the Ethereum Atlas Project.
 
 ## What is Ethereum Atlas?
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ChkIfjbVAfQ" frameborder="0" allowfullscreen></iframe>
-
+[![What is Ethereum Atlas?](https://img.youtube.com/vi/ChkIfjbVAfQ/0.jpg)](https://www.youtube.com/watch?v=ChkIfjbVAfQ)
 
 ## Two ways to use Atlas:
 1) Visit the live demo at <a href=http://34.192.3.172>34.192.3.172</a> (soon ethereumatlas.online once DNS propagates).
@@ -24,15 +23,15 @@ For any parcel transfer to complete it needs EITHER:
 A) The transfer to be completed by a Notary and by any account with the secret key for the parcel.
 B) The transfer to be completed by a Notary account, a Federal account, and a Judicial account.
 
-### Demo: transfer a parcel
-<iframe width="560" height="315" src="https://www.youtube.com/embed/QMGu2OAwr00" frameborder="0" allowfullscreen></iframe>
-### Demo: transfer a Parcel with a QR code key
-<iframe width="560" height="315" src="https://www.youtube.com/embed/uorqY75FvMk" frameborder="0" allowfullscreen></iframe>
-### Demo: create a parcel
-<iframe width="560" height="315" src="https://www.youtube.com/embed/5Ytheo-WL5I" frameborder="0" allowfullscreen></iframe>
+### (Demo) Transfer a parcel:
+[![(Demo) Transfer a parcel](https://img.youtube.com/vi/QMGu2OAwr00/0.jpg)](https://www.youtube.com/watch?v=QMGu2OAwr00)
+### (Demo) Transfer a parcel with a QR code key:
+[![(Demo) Transfer a parcel with a QR code key](https://img.youtube.com/vi/uorqY75FvMk/0.jpg)](https://www.youtube.com/watch?v=uorqY75FvMk)
+### (Demo) Create a parcel:
+[![(Demo) Create a parcel](https://img.youtube.com/vi/5Ytheo-WL5I/0.jpg)](https://www.youtube.com/watch?v=5Ytheo-WL5I)
 
 ## Technology overview:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/TAlaephD_4E" frameborder="0" allowfullscreen></iframe>
+[![Technology overview](https://img.youtube.com/vi/TAlaephD_4E/0.jpg)](https://www.youtube.com/watch?v=TAlaephD_4E)
 
 ## Team intro:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/MMpyv3k2vak" frameborder="0" allowfullscreen></iframe>
+[![Team intro](https://img.youtube.com/vi/MMpyv3k2vak/0.jpg)](https://www.youtube.com/watch?v=MMpyv3k2vak)
