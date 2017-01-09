@@ -15,16 +15,14 @@ function Footer() {
   return (
     <footer className="mdl-mini-footer">
       <div className="mdl-mini-footer__left-section">
-        <div className="mdl-logo">© Company Name</div>
+        <div className="mdl-logo">© 2017 Ethereum Atlas</div>
         <ul className="mdl-mini-footer__link-list">
-          <li><Link to="/privacy">Privacy & Terms</Link></li>
-          <li><Link to="/not-found">Not Found</Link></li>
         </ul>
       </div>
       <div className="mdl-mini-footer__right-section">
         <ul className="mdl-mini-footer__link-list">
           <li className="mdl-mini-footer--social-btn" style={{ backgroundColor: 'transparent' }}>
-            <a href="https://github.com/kriasoft/react-static-boilerplate" role="button" title="GitHub">
+            <a href="https://github.com/giblfiz/atlas" role="button" title="GitHub">
               <svg width="36" height="36" viewBox="0 0 24 24">
                 <path
                   fill="#fff" d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58
@@ -42,7 +40,7 @@ function Footer() {
             </a>
           </li>
           <li className="mdl-mini-footer--social-btn" style={{ backgroundColor: 'transparent' }}>
-            <a href="https://twitter.com/ReactStatic" role="button" title="Twitter">
+            <a href="https://twitter.com/giblfiz" role="button" title="Twitter">
               <svg width="36" height="36" viewBox="0 0 24 24">
                 <path
                   fill="#fff" d="M17.71,9.33C18.19,8.93 18.75,8.45 19,7.92C18.59,8.13 18.1,8.26

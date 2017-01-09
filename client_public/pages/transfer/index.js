@@ -292,12 +292,11 @@ class TransferPage extends Component {
         <span>Officer Type: {this.state.officerType}</span>
         <hr />
 
-        <h4>Transfer a Parcel</h4>
+        <h4>Parcel Details</h4>
         <label>Parcel: <select onChange={this.handleChangeParcelHash}>
           {this.state.parcelHash.map(hash => (<option value={hash.value}>{hash.text}</option>))}
         </select><br />
           <span>{this.getParcelOwnerString(this.state.parcelActive)}</span><br />
-          <span>{this.getParcelBoundariesString(this.state.parcelActive)}</span><br />
         </label>
         <Input
           label="New Owner Hash"
@@ -325,7 +324,7 @@ class TransferPage extends Component {
         <div><Button type="raised" onClick={this.handleClickTransfer}>Transfer</Button></div>
 
 
-        <div style={{ width: 400, height: 400 }}>
+        <div style={{ width: 300, height: 300 }}>
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
               .split('').reverse().join('') }}

@@ -1,7 +1,5 @@
 ---
-title: Property Transfer by Owner
+title: Ethereum Atlas Project
 ---
 
 ## Create a Parcel
-
-This is a site for owners to transfer property on the Ethereum blockchain.

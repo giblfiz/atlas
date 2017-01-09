@@ -209,7 +209,7 @@ class TransferPage extends Component {
         <span>Officer Type: {this.state.officerType}</span>
         <hr />
 
-        <h4>Create a Parcel</h4>
+        <h4>Parcel Details</h4>
         <Input
           label="North"
           value={this.state.north}
@@ -238,7 +238,7 @@ class TransferPage extends Component {
         <div>
           <Button type="raised" onClick={this.handleUpdateParcelRect}>Update Parcel</Button>
         </div>
-        <div style={{ width: 400, height: 400}}>
+        <div style={{ width: 300, height: 300 }}>
           <GoogleMap
             bootstrapURLKeys={{ key: 'ExGgfDsim8Rukpfc7H6uPCrtvulG_MwSCySazIA'
               .split('').reverse().join('') }}
