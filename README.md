@@ -19,14 +19,17 @@
   
   * NOTE: Your private accounts will NOT be 'officer' types, so it will be impossible to complete any transactions this way.
 
-
 ## How to transfer a parcel:
 For any parcel transfer to complete it needs EITHER:
 A) The transfer to be completed by a Notary and by any account with the secret key for the parcel.
 B) The transfer to be completed by a Notary account, a Federal account, and a Judicial account.
 
-Watch the transfer demo:
+### Demo: transfer a parcel
 <iframe width="560" height="315" src="https://www.youtube.com/embed/QMGu2OAwr00" frameborder="0" allowfullscreen></iframe>
+### Demo: transfer a Parcel with a QR code key
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uorqY75FvMk" frameborder="0" allowfullscreen></iframe>
+### Demo: create a parcel
+<iframe width="560" height="315" src="https://www.youtube.com/embed/5Ytheo-WL5I" frameborder="0" allowfullscreen></iframe>
 
 ## Technology overview:
 <iframe width="560" height="315" src="https://www.youtube.com/embed/TAlaephD_4E" frameborder="0" allowfullscreen></iframe>
