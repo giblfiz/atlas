@@ -26,8 +26,8 @@ import { title, html } from './index.md';
 import GoogleMap from 'google-map-react';
 
 import Web3 from 'web3';
-// const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-const web3 = new Web3(new Web3.providers.HttpProvider('http://34.192.3.172:8545'));
+const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+// const web3 = new Web3(new Web3.providers.HttpProvider('http://34.192.3.172:8545'));
 
 
 class TransferPage extends Component {
